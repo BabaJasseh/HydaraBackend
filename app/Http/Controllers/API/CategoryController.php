@@ -41,6 +41,15 @@ class CategoryController extends Controller
         ]);
     }
 
+    public function productInCategory($categoryId){
+        $sale = Category::find($categoryId)->with('products')->get();
+        if ($sale) {
+            return response()->json([
+                'status' => 200,
+                'categories' => $sale,
+            ]);
+        }
+    }
     public function edit($id){
         $category = Category::find($id);
         if ($category) {
