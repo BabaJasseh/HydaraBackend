@@ -14,8 +14,8 @@ use App\Http\Controllers\API\StaffController;
 use App\Http\Controllers\API\StockController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\TransactionController;
-
-
+use App\Http\Controllers\API\UserTypeController;
+use App\Models\Usertype;
 
 /*
 |--------------------------------------------------------------------------
@@ -72,7 +72,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::delete('delete-category/{id}', [CategoryController::class, 'destroy']);
     Route::get('edit-category/{id}', [CategoryController::class, 'edit']);
     Route::post('update-category/{id}', [CategoryController::class, 'update']);
-    Route::get('view-productsInCategory/{CategoryId}', [CategoryController::class, 'productInCategory']);
+    
 
     ////////////////////////////////        Stock      ///////////////////////////////
     Route::post('store-stock', [StockController::class, 'store']);
@@ -145,6 +145,10 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::delete('delete-expenditure/{id}', [ExpenditureController::class, 'destroy']);
     Route::get('edit-expenditure/{id}', [ExpenditureController::class, 'edit']);
     Route::post('update-expenditure/{id}', [ExpenditureController::class, 'update']);
+
+    ////////////////////////////////        Expenditure      ///////////////////////////////
+    Route::get('user-types', [UserTypeController::class, 'index']);
+
     });
 
 
