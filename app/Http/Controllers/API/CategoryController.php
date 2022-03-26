@@ -33,8 +33,11 @@ class CategoryController extends Controller
        
     }
 
-    public function index(){
-        $category = Category::all();
+    public function index(Request $request){
+        $category = Category::paginate();
+        if ($request->keyword) {
+            $category = Category::where('name', 'LIKE', '%' .$request->keyword. '%')->get();
+        }
         return response()->json([
             'status' => 200,
             'result' => $category,   
