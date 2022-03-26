@@ -45,8 +45,11 @@ class ProductController extends Controller
        
     }
 
-    public function index(){
-        $product = Product::all();
+    public function index(Request $request){
+        $product = Product::paginate();
+        if ($request->keyword) {
+            $product = Product::where('name', 'LIKE', '%' .$request->keyword. '%')->get();
+        }
         return response()->json([
             'status' => 200,
             'result' => $product,           
