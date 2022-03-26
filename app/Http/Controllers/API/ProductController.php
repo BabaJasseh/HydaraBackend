@@ -1,14 +1,21 @@
 <?php
 
 namespace App\Http\Controllers\API;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware(['auth:api', 'seller'], ['except' => ['login', 'register']]);
+    }
     public function store(Request $request){
         $validator = Validator::make($request->all(), [
             'category_id'=>'required|max:190',
@@ -45,6 +52,8 @@ class ProductController extends Controller
             'result' => $product,           
         ]);
     }
+
+    
 
     public function edit($id){
         $product = Product::find($id);
