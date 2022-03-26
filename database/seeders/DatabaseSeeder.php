@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -23,5 +24,7 @@ class DatabaseSeeder extends Seeder
          $this->call(DepositorSeeder::class);
          $this->call(SaleSeeder::class);
          $this->call(BorrowerSeeder::class);
+         $this->call(UserTypeSeeder::class);
+         $this->call(UserSeeder::class);
     }
 }
