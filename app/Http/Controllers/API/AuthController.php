@@ -30,7 +30,8 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
 
-     public function register(Request $request){
+    public function register(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:191',
             'email' => 'required|max:191',
@@ -38,7 +39,7 @@ class AuthController extends Controller
             'userType' => 'required',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json([
                 'message' => 'registration failed',
 
@@ -46,28 +47,39 @@ class AuthController extends Controller
         }
 
         $user = new User();
-            $user->name = $request->name;
-            $user->email = $request->email;
-            $user->password = bcrypt($request->password);
-            $user->userType = $request->userType;
-            $user->save();
-            return response([
-                'message' => "user created successfully",
-                'user' => $user,
-            ]);
-     }
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = bcrypt($request->password);
+        $user->userType = $request->userType;
+        $user->save();
+        return response([
+            'message' => "user created successfully",
+            'user' => $user,
+        ]);
+    }
     public function login()
     {
         $credentials = request(['email', 'password']);
-       // return $credentials['email'];
+        // return $credentials['email'];
 
-        if (! $token = JWTAuth::attempt($credentials)) {
+        if (!$token = JWTAuth::attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
         return $this->respondWithToken($token);
     }
-   
+
+    public function info()
+    {
+        $data = [
+            "code" => 200,
+            "roles" => ["admin"],
+            "introduction" => "I am a super administrator",
+            "avatar" => ('/hydara_logo.png'),
+            "name" => "Super Admin"
+        ];
+        return response()->json($data, 200);
+    }
 
     // public function login(Request $request)
     // {
@@ -105,7 +117,11 @@ class AuthController extends Controller
     {
         auth()->logout();
 
-        return response()->json(['message' => 'Successfully logged out']);
+        return response()->json([
+            'code' => 200,
+            'data' => 'success',
+            'message' => 'Successfully logged out'
+        ]);
     }
 
     /**
@@ -128,6 +144,7 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
         return response()->json([
+            'code' => 200,
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => config('jwt.ttl'),

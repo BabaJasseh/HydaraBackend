@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\API;
+
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 use App\Http\Controllers\Controller;
@@ -16,9 +17,10 @@ class ProductController extends Controller
     {
         $this->middleware(['auth:api', 'seller'], ['except' => ['login', 'register']]);
     }
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $validator = Validator::make($request->all(), [
-            'category_id'=>'required|max:190',
+            'category_id' => 'required|max:190',
             'name' => 'required|max:191',
             'brand_id' => 'required|max:191',
             'description' => 'required|max:190',
@@ -29,7 +31,7 @@ class ProductController extends Controller
                 'status' => 422,
                 'errors' => $validator->errors(),
             ]);
-        } else{
+        } else {
             $product = new Product();
             $product->name = $request->name;
             $product->category_id = $request->category_id;
@@ -42,23 +44,49 @@ class ProductController extends Controller
                 'message' => 'Student added successfully',
             ]);
         }
-       
     }
 
-    public function index(Request $request){
-        $product = Product::paginate();
-        if ($request->keyword) {
-            $product = Product::where('name', 'LIKE', '%' .$request->keyword. '%')->get();
+    public function index(Request $request)
+    {
+        // $product = Product::with('category', 'brand', 'stock')->get();
+        // return $request;
+        if ($request->sort == "-id") {
+            $product = Product::with('category', 'brand', 'stock')->orderBy('id', 'desc')->paginate(20);
+        } else {
+            $product = Product::with('category', 'brand', 'stock')->paginate(20);
         }
+
+        if ($request->name) {
+            $order = $request->sort == '-id' ? 'DESC' : 'ASC';
+            $product = Product::where('name', 'LIKE', '%' . $request->name . '%')
+                ->with(
+                    'category',
+                    'brand',
+                    'stock'
+                )->orderBy('id', $order)->paginate(20);
+        }
+        $response = [
+            'pagination' => [
+                'total' => $product->total(),
+                'per_page' => $product->perPage(),
+                'current_page' => $product->currentPage(),
+                'last_page' => $product->lastPage(),
+                'from' => $product->firstItem(),
+                'to' => $product->lastItem()
+            ],
+            'data' => $product
+        ];
+
         return response()->json([
             'status' => 200,
-            'result' => $product,           
+            'result' => $response,
         ]);
     }
 
-    
 
-    public function edit($id){
+
+    public function edit($id)
+    {
         $product = Product::find($id);
         if ($product) {
             return response()->json([
@@ -73,9 +101,10 @@ class ProductController extends Controller
         }
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $validator = Validator::make($request->all(), [
-            'category_id'=>'required|max:190',
+            'category_id' => 'required|max:190',
             'name' => 'required|max:191',
             'brand_id' => 'required|max:191',
             'description' => 'required|max:190',
@@ -99,18 +128,17 @@ class ProductController extends Controller
                     'status' => 200,
                     'message' => 'Student added successfully',
                 ]);
-            } else{ 
+            } else {
                 return response()->json([
                     'status' => 404,
                     'messages' => "product id not found",
                 ]);
             }
-           
         }
-       
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $product = Product::find($id);
         if ($product) {
             $product->delete();
@@ -125,5 +153,4 @@ class ProductController extends Controller
             ]);
         }
     }
-
 }

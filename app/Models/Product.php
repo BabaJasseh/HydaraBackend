@@ -12,18 +12,23 @@ class Product extends Model
 {
     use HasFactory;
 
-    public function category(){
+    public function category()
+    {
         return $this->belongsTo(Category::class);
     }
 
-    
-    public function sales(){
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
+    }
+
+    public function sales()
+    {
         return $this->hasMany(Sale::class); // before it was belongs to many
     }
 
-    public function stock(){
+    public function stock()
+    {
         return $this->belongsTo(Stock::class);
     }
 }
-
-
