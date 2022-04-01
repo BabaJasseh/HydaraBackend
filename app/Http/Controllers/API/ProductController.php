@@ -103,12 +103,13 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
+        // return $request;
         $validator = Validator::make($request->all(), [
             'category_id' => 'required|max:190',
             'name' => 'required|max:191',
             'brand_id' => 'required|max:191',
             'description' => 'required|max:190',
-            'price' => 'required|max:200',
+            'costprice' => 'required|max:200',
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -122,11 +123,11 @@ class ProductController extends Controller
                 $product->category_id = $request->category_id;
                 $product->brand_id = $request->brand_id;
                 $product->description = $request->description;
-                $product->price = $request->price;
+                $product->costprice = $request->costprice;
                 $product->save();
                 return response()->json([
                     'status' => 200,
-                    'message' => 'Student added successfully',
+                    'message' => 'Product added successfully',
                 ]);
             } else {
                 return response()->json([
