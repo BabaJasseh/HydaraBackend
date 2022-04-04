@@ -41,11 +41,40 @@ class DepositorController extends Controller
        
     }
 
-    public function index(){
-        $depositor = Depositor::all();
+    public function index(Request $request){
+        // $depositor = Depositor::all();
+        // return response()->json([
+        //     'status' => 200,
+        //     'result' => $depositor,           
+        // ]);
+        if ($request->sort == "-id") {
+            $depositor = Depositor::with('transactions')->orderBy('id', 'desc')->paginate(20);
+        } else {
+            $depositor = Depositor::with('transactions')->paginate(20);
+        }
+
+        if ($request->name) {
+            $order = $request->sort == '-id' ? 'DESC' : 'ASC';
+            $depositor = Depositor::where('name', 'LIKE', '%' . $request->name . '%')
+                ->with(
+                    'transactions',
+                )->orderBy('id', $order)->paginate(20);
+        }
+        $response = [
+            'pagination' => [
+                'total' => $depositor->total(),
+                'per_page' => $depositor->perPage(),
+                'current_page' => $depositor->currentPage(),
+                'last_page' => $depositor->lastPage(),
+                'from' => $depositor->firstItem(),
+                'to' => $depositor->lastItem()
+            ],
+            'data' => $depositor
+        ];
+
         return response()->json([
             'status' => 200,
-            'result' => $depositor,           
+            'result' => $response,
         ]);
     }
 
