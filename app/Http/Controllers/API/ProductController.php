@@ -24,7 +24,8 @@ class ProductController extends Controller
             'name' => 'required|max:191',
             'brand_id' => 'required|max:191',
             'description' => 'required|max:190',
-            'price' => 'required|max:200',
+            'totalQuantity' => 'required|max:10000',
+            'costprice' => 'required|max:200',
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -38,10 +39,11 @@ class ProductController extends Controller
             $product->brand_id = $request->brand_id;
             $product->description = $request->description;
             $product->costprice = $request->costprice;
+            $product->totalQuantity = $request->totalQuantity;
             $product->save();
             return response()->json([
                 'status' => 200,
-                'message' => 'Student added successfully',
+                'message' => 'Product added successfully',
             ]);
         }
     }
@@ -51,9 +53,9 @@ class ProductController extends Controller
         // $product = Product::with('category', 'brand', 'stock')->get();
         // return $request;
         if ($request->sort == "-id") {
-            $product = Product::with('category', 'brand', 'stock')->orderBy('id', 'desc')->paginate(20);
+            $product = Product::with('category', 'brand')->orderBy('id', 'desc')->paginate(20);
         } else {
-            $product = Product::with('category', 'brand', 'stock')->paginate(20);
+            $product = Product::with('category', 'brand')->paginate(20);
         }
 
         if ($request->name) {
@@ -62,7 +64,6 @@ class ProductController extends Controller
                 ->with(
                     'category',
                     'brand',
-                    'stock'
                 )->orderBy('id', $order)->paginate(20);
         }
         $response = [

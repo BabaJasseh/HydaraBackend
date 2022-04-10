@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\DepositorController;
 use App\Http\Controllers\API\ExpenditureController;
 use App\Http\Controllers\API\ProductController;
+use App\Http\Controllers\API\BrandController;
 use App\Http\Controllers\API\SalaryController;
 use App\Http\Controllers\API\SaleController;
 use App\Http\Controllers\API\StaffController;
@@ -72,6 +73,14 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::delete('delete-category/{id}', [CategoryController::class, 'destroy']);
         Route::get('edit-category/{id}', [CategoryController::class, 'edit']);
         Route::post('update-category/{id}', [CategoryController::class, 'update']);
+
+
+        ////////////////////////////////        Brand      ///////////////////////////////
+        Route::post('store-brand', [BrandController::class, 'store']);
+        Route::get('view-brands', [BrandController::class, 'index']);
+        Route::delete('delete-brand/{id}', [BrandController::class, 'destroy']);
+        Route::get('edit-brand/{id}', [BrandController::class, 'edit']);
+        Route::post('update-brand/{id}', [BrandController::class, 'update']);
 
 
         ////////////////////////////////        Stock      ///////////////////////////////
