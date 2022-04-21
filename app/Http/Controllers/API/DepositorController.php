@@ -81,12 +81,9 @@ class DepositorController extends Controller
     public function transactionsOfdepositor(Request $request, $id){
         // $depositor = Depositor::find($id);
         $depositor = Depositor::where('id', $id)->firstOrFail()->transactions()->paginate(5);
-        // return response()->json([
-        //     'status' => 200,
-        //     'result' => $depositor,
-        // ]);
+        
         if ($request->sort == "-id") {
-            $depositor = Depositor::here('id', $id)->first()->transactions()->orderBy('id', 'desc')->paginate(20);
+            $depositor = Depositor::where('id', $id)->first()->transactions()->orderBy('id', 'desc')->paginate(20);
         } else {
             $depositor = Depositor::where('id', $id)->first()->transactions()->paginate(20);
         }

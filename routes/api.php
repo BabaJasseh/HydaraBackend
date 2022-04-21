@@ -65,6 +65,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::delete('delete-product/{id}', [ProductController::class, 'destroy']);
         Route::get('edit-product/{id}', [ProductController::class, 'edit']);
         Route::post('update-product/{id}', [ProductController::class, 'update']);
+        Route::post('append-product-stock-quantity/{id}', [ProductController::class, 'appendStockToProduct']);
 
 
         ////////////////////////////////        Category      ///////////////////////////////
@@ -120,11 +121,16 @@ Route::group(['middleware' => 'auth:api'], function () {
 
         ////////////////////////////////        Sales      ///////////////////////////////
         Route::post('store-sale', [SaleController::class, 'store']);
-        Route::get('view-sales', [SaleController::class, 'index']); //////// might be deleted
+        Route::get('view-sales', [SaleController::class, 'index']);
+        Route::get('view-all-sales', [SaleController::class, 'allSales']); //////// might be deleted
+        Route::get('view-electronic-sales', [SaleController::class, 'electronicsSales']);
+        Route::get('view-mobile-sales', [SaleController::class, 'mobileSales']);
+        Route::get('view-accessories-sales', [SaleController::class, 'accessoriesSales']);
         Route::delete('delete-sale/{id}', [SaleController::class, 'destroy']);
         Route::get('edit-sale/{id}', [SaleController::class, 'edit']);
         Route::post('update-sale/{id}', [SaleController::class, 'update']);
         Route::get('view-productsInSale/{SaleId}', [SaleController::class, 'productInSale']);
+        
 
         ////////////////////////////////        Creditors      ///////////////////////////////
         Route::post('store-creditor/{id}', [CreditorController::class, 'store']);

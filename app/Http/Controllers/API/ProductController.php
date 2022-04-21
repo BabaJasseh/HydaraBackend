@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -41,10 +42,12 @@ class ProductController extends Controller
             $product->costprice = $request->costprice;
             $product->totalQuantity = $request->totalQuantity;
             $product->save();
+            \Log::info($product);
             return response()->json([
                 'status' => 200,
                 'message' => 'Product added successfully',
             ]);
+            
         }
     }
 
@@ -84,7 +87,16 @@ class ProductController extends Controller
         ]);
     }
 
-
+    public function appendStockToProduct(Request $request, $productId){
+       
+        $productQuantity =  DB::table('products')->where('id', '=', $productId)->first()->totalQuantity;
+        $newQuantity = $productQuantity + $request->quantityToAppend;
+        DB::table('products')->where('id', '=', $productId)->update(['totalQuantity' => $newQuantity]);
+        return response()->json([
+            'status' => 200,
+            'result' => $newQuantity,
+        ]);
+    }
 
     public function edit($id)
     {
