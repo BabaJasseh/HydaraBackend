@@ -14,7 +14,7 @@ class StockSeeder extends Seeder
      */
     public function run()
     {
-        Stock::factory()->count(4)->create();
+        Stock::factory()->count(20)->create();
 
     }
 }

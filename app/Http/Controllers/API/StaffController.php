@@ -38,13 +38,42 @@ class StaffController extends Controller
        
     }
 
-    public function index(){
-        $staff = Staff::all();
+    public function index(Request $request)
+    {
+        // $staff = Product::with('category', 'brand', 'stock')->get();
+        // return $request;
+        if ($request->sort == "-id") {
+            $staff = Staff::orderBy('id', 'desc')->paginate(20);
+        } else {
+            $staff = Staff::paginate(20);
+        }
+
+        if ($request->name) {
+            $order = $request->sort == '-id' ? 'DESC' : 'ASC';
+            $staff = Staff::where('name', 'LIKE', '%' . $request->name . '%')
+                ->with(
+                    'category',
+                    'brand',
+                )->orderBy('id', $order)->paginate(20);
+        }
+        $response = [
+            'pagination' => [
+                'total' => $staff->total(),
+                'per_page' => $staff->perPage(),
+                'current_page' => $staff->currentPage(),
+                'last_page' => $staff->lastPage(),
+                'from' => $staff->firstItem(),
+                'to' => $staff->lastItem()
+            ],
+            'data' => $staff
+        ];
+
         return response()->json([
             'status' => 200,
-            'result' => $staff,           
+            'result' => $response,
         ]);
     }
+
 
     public function edit($id){
         $staff = Staff::find($id);

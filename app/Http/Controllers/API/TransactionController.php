@@ -54,11 +54,38 @@ class TransactionController extends Controller
        
     }
 
-    public function index(){
-        $transaction = Transaction::all();
+    public function index(Request $request)
+    {
+        // $transaction = Product::with('category', 'brand', 'stock')->get();
+        // return $request;
+        if ($request->sort == "-id") {
+            $transaction = Transaction::with('depositor')->orderBy('id', 'desc')->paginate(20);
+        } else {
+            $transaction = Transaction::with('depositor')->paginate(20);
+        }
+
+        if ($request->name) {
+            $order = $request->sort == '-id' ? 'DESC' : 'ASC';
+            $transaction = Transaction::where('name', 'LIKE', '%' . $request->name . '%')
+                ->with(
+                    'depositor',
+                )->orderBy('id', $order)->paginate(20);
+        }
+        $response = [
+            'pagination' => [
+                'total' => $transaction->total(),
+                'per_page' => $transaction->perPage(),
+                'current_page' => $transaction->currentPage(),
+                'last_page' => $transaction->lastPage(),
+                'from' => $transaction->firstItem(),
+                'to' => $transaction->lastItem()
+            ],
+            'data' => $transaction
+        ];
+
         return response()->json([
             'status' => 200,
-            'result' => $transaction,           
+            'result' => $response,
         ]);
     }
 

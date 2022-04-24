@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -24,7 +25,8 @@ class ProductController extends Controller
             'name' => 'required|max:191',
             'brand_id' => 'required|max:191',
             'description' => 'required|max:190',
-            'price' => 'required|max:200',
+            'totalQuantity' => 'required|max:10000',
+            'costprice' => 'required|max:200',
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -38,11 +40,14 @@ class ProductController extends Controller
             $product->brand_id = $request->brand_id;
             $product->description = $request->description;
             $product->costprice = $request->costprice;
+            $product->totalQuantity = $request->totalQuantity;
             $product->save();
+            \Log::info($product);
             return response()->json([
                 'status' => 200,
-                'message' => 'Student added successfully',
+                'message' => 'Product added successfully',
             ]);
+            
         }
     }
 
@@ -84,7 +89,16 @@ class ProductController extends Controller
         ]);
     }
 
-
+    public function appendStockToProduct(Request $request, $productId){
+       
+        $productQuantity =  DB::table('products')->where('id', '=', $productId)->first()->totalQuantity;
+        $newQuantity = $productQuantity + $request->quantityToAppend;
+        DB::table('products')->where('id', '=', $productId)->update(['totalQuantity' => $newQuantity]);
+        return response()->json([
+            'status' => 200,
+            'result' => $newQuantity,
+        ]);
+    }
 
     public function edit($id)
     {
