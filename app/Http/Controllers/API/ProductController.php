@@ -55,10 +55,11 @@ class ProductController extends Controller
     {
         // $product = Product::with('category', 'brand', 'stock')->get();
         // return $request;
+        $limit = $request->limit;
         if ($request->sort == "-id") {
-            $product = Product::with('category', 'brand')->orderBy('id', 'desc')->paginate(20);
+            $product = Product::with('category', 'brand', 'stock')->orderBy('id', 'desc')->paginate($limit);
         } else {
-            $product = Product::with('category', 'brand')->paginate(20);
+            $product = Product::with('category', 'brand', 'stock')->paginate($limit);
         }
 
         if ($request->name) {
@@ -67,7 +68,8 @@ class ProductController extends Controller
                 ->with(
                     'category',
                     'brand',
-                )->orderBy('id', $order)->paginate(20);
+                    'stock'
+                )->orderBy('id', $order)->paginate($limit);
         }
         $response = [
             'pagination' => [
