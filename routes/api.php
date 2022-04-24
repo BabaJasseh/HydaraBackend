@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\DepositorController;
 use App\Http\Controllers\API\ExpenditureController;
 use App\Http\Controllers\API\ProductController;
+use App\Http\Controllers\API\BrandController;
 use App\Http\Controllers\API\SalaryController;
 use App\Http\Controllers\API\SaleController;
 use App\Http\Controllers\API\StaffController;
@@ -64,6 +65,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::delete('delete-product/{id}', [ProductController::class, 'destroy']);
         Route::get('edit-product/{id}', [ProductController::class, 'edit']);
         Route::post('update-product/{id}', [ProductController::class, 'update']);
+        Route::post('append-product-stock-quantity/{id}', [ProductController::class, 'appendStockToProduct']);
 
 
         ////////////////////////////////        Category      ///////////////////////////////
@@ -72,6 +74,14 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::delete('delete-category/{id}', [CategoryController::class, 'destroy']);
         Route::get('edit-category/{id}', [CategoryController::class, 'edit']);
         Route::post('update-category/{id}', [CategoryController::class, 'update']);
+
+
+        ////////////////////////////////        Brand      ///////////////////////////////
+        Route::post('store-brand', [BrandController::class, 'store']);
+        Route::get('view-brands', [BrandController::class, 'index']);
+        Route::delete('delete-brand/{id}', [BrandController::class, 'destroy']);
+        Route::get('edit-brand/{id}', [BrandController::class, 'edit']);
+        Route::post('update-brand/{id}', [BrandController::class, 'update']);
 
 
         ////////////////////////////////        Stock      ///////////////////////////////
@@ -111,11 +121,16 @@ Route::group(['middleware' => 'auth:api'], function () {
 
         ////////////////////////////////        Sales      ///////////////////////////////
         Route::post('store-sale', [SaleController::class, 'store']);
-        Route::get('view-sales', [SaleController::class, 'index']); //////// might be deleted
+        Route::get('view-sales', [SaleController::class, 'index']);
+        Route::get('view-all-sales', [SaleController::class, 'allSales']); //////// might be deleted
+        Route::get('view-electronic-sales', [SaleController::class, 'electronicsSales']);
+        Route::get('view-mobile-sales', [SaleController::class, 'mobileSales']);
+        Route::get('view-accessories-sales', [SaleController::class, 'accessoriesSales']);
         Route::delete('delete-sale/{id}', [SaleController::class, 'destroy']);
         Route::get('edit-sale/{id}', [SaleController::class, 'edit']);
         Route::post('update-sale/{id}', [SaleController::class, 'update']);
         Route::get('view-productsInSale/{SaleId}', [SaleController::class, 'productInSale']);
+        
 
         ////////////////////////////////        Creditors      ///////////////////////////////
         Route::post('store-creditor/{id}', [CreditorController::class, 'store']);

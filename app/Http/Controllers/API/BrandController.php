@@ -31,13 +31,41 @@ class BrandController extends Controller
        
     }
 
-    public function index(){
-        $brand = Brand::all();
+    public function index(Request $request)
+    {
+        // $product = Product::with('category', 'brand', 'stock')->get();
+        // return $request;
+        if ($request->sort == "-id") {
+            $brand = Brand::with('products')->orderBy('id', 'desc')->paginate(20);
+        } else {
+            $brand = Brand::with('products')->paginate(20);
+        }
+
+        if ($request->name) {
+            $order = $request->sort == '-id' ? 'DESC' : 'ASC';
+            $brand = Brand::where('name', 'LIKE', '%' . $request->name . '%')
+                ->with(
+                    'products',
+                )->orderBy('id', $order)->paginate(20);
+        }
+        $response = [
+            'pagination' => [
+                'total' => $brand->total(),
+                'per_page' => $brand->perPage(),
+                'current_page' => $brand->currentPage(),
+                'last_page' => $brand->lastPage(),
+                'from' => $brand->firstItem(),
+                'to' => $brand->lastItem()
+            ],
+            'data' => $brand
+        ];
+
         return response()->json([
             'status' => 200,
-            'result' => $brand,   
+            'result' => $response,
         ]);
     }
+
 
     public function edit($id){
         $brand = Brand::find($id);
