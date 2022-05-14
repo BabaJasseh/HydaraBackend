@@ -45,11 +45,40 @@ class SalaryController extends Controller
        
     }
 
-    public function index(){
-        $salary = Salary::all();
+    public function index(Request $request)
+    {
+        // $product = Product::with('category', 'brand', 'stock')->get();
+        // return $request;
+        if ($request->sort == "-id") {
+            // $product = Product::with('category', 'brand')->orderBy('id', 'desc')->paginate(20);
+            $product = Salary::orderBy('id', 'desc')->paginate(20);
+        } else {
+            $product = Salary::paginate(20);
+        }
+
+        if ($request->name) {
+            $order = $request->sort == '-id' ? 'DESC' : 'ASC';
+            $product = Salary::where('name', 'LIKE', '%' . $request->name . '%')
+                ->with(
+                    'category',
+                    'brand',
+                )->orderBy('id', $order)->paginate(20);
+        }
+        $response = [
+            'pagination' => [
+                'total' => $product->total(),
+                'per_page' => $product->perPage(),
+                'current_page' => $product->currentPage(),
+                'last_page' => $product->lastPage(),
+                'from' => $product->firstItem(),
+                'to' => $product->lastItem()
+            ],
+            'data' => $product
+        ];
+
         return response()->json([
             'status' => 200,
-            'result' => $salary,           
+            'result' => $response,
         ]);
     }
 

@@ -17,8 +17,7 @@ class BorrowerController extends Controller
             'address' => 'required|max:191',
             'description' => 'required|max:190',
             'telephone' => 'required|max:190',
-            // 'initialDeposit' => 'required|max:200',
-            'amountBorrowed' => 'required|max:200',
+            'initialBorrow' => 'required|max:200',
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -32,12 +31,9 @@ class BorrowerController extends Controller
             $borrower->address = $request->address;
             $borrower->description = $request->description;
             $borrower->telephone = $request->telephone;
-            $borrower->amountBorrowed = $request->amountBorrowed;
-            // $borrower->initialDeposit = $request->initialDeposit;
+            $borrower->initialBorrow = $request->initialBorrow;
+            $borrower->balance = $borrower->initialBorrow;
             $borrower->save();
-            //////////////////////////////   subtract the withdraw amount to the cashes.cashathand //////////////////
-            $previousCashAthand = DB::table('cashes')->first()->cashAthand;
-            DB::table('cashes')->update(['cashAthand' => $previousCashAthand - $request->amountBorrowed]);
             return response()->json([
                 'status' => 200,
                 'message' => 'Borrower added successfully',
@@ -62,11 +58,70 @@ class BorrowerController extends Controller
              }
     }
 
-    public function index(){
-        $borrower = Borrower::all();
+    public function index(Request $request){
+        if ($request->sort == "-id") {
+            $borrower = Borrower::with('borrowertransactions')->orderBy('id', 'desc')->paginate(20);
+        } else {
+            $borrower = Borrower::with('borrowertransactions')->paginate(20);
+        }
+
+        if ($request->name) {
+            $order = $request->sort == '-id' ? 'DESC' : 'ASC';
+            $borrower = Borrower::where('name', 'LIKE', '%' . $request->name . '%')
+                ->with(
+                    'transactions',
+                )->orderBy('id', $order)->paginate(20);
+        }
+        $response = [
+            'pagination' => [
+                'total' => $borrower->total(),
+                'per_page' => $borrower->perPage(),
+                'current_page' => $borrower->currentPage(),
+                'last_page' => $borrower->lastPage(),
+                'from' => $borrower->firstItem(),
+                'to' => $borrower->lastItem()
+            ],
+            'data' => $borrower
+        ];
+
         return response()->json([
             'status' => 200,
-            'result' => $borrower,           
+            'result' => $response,
+        ]);
+    }
+
+    public function transactionsOfBorrower(Request $request, $id){
+        // $borrower = Borrower::find($id);
+        $borrower = Borrower::where('id', $id)->firstOrFail()->borrowertransactions()->paginate(5);
+        
+        if ($request->sort == "-id") {
+            $borrower = Borrower::where('id', $id)->first()->borrowertransactions()->orderBy('id', 'desc')->paginate(20);
+        } else {
+            $borrower = Borrower::where('id', $id)->first()->borrowertransactions()->paginate(20);
+        }
+
+        if ($request->name) {
+            $order = $request->sort == '-id' ? 'DESC' : 'ASC';
+            $borrower = Borrower::where('name', 'LIKE', '%' . $request->name . '%')
+                ->with(
+                    'transactions',
+                )->orderBy('id', $order)->paginate(20);
+        }
+        $response = [
+            'pagination' => [
+                'total' => $borrower->total(),
+                'per_page' => $borrower->perPage(),
+                'current_page' => $borrower->currentPage(),
+                'last_page' => $borrower->lastPage(),
+                'from' => $borrower->firstItem(),
+                'to' => $borrower->lastItem()
+            ],
+            'data' =>  $borrower,
+        ];
+
+        return response()->json([
+            'status' => 200,
+            'result' => $response,
         ]);
     }
 

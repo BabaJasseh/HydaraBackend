@@ -33,7 +33,8 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|max:191',
+            'firstname' => 'required|max:191',
+            'lastname' => 'required|max:191',
             'email' => 'required|max:191',
             'password' => 'required|max:191',
             'userType' => 'required',
@@ -47,14 +48,15 @@ class AuthController extends Controller
         }
 
         $user = new User();
-        $user->name = $request->name;
+        $user->firstname = $request->firstname;
+        $user->lastname = $request->lastname;
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
         $user->userType = $request->userType;
         $user->save();
         return response([
             'message' => "user created successfully",
-            'user' => $user,
+            'users' => $user,
         ]);
     }
     public function login()

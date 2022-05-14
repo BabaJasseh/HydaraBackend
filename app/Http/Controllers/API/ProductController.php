@@ -41,6 +41,7 @@ class ProductController extends Controller
             $product->description = $request->description;
             $product->costprice = $request->costprice;
             $product->totalQuantity = $request->totalQuantity;
+            $product->totalPrice = $request->costprice * $request->totalQuantity;
             $product->save();
             \Log::info($product);
             return response()->json([
@@ -56,6 +57,7 @@ class ProductController extends Controller
         // $product = Product::with('category', 'brand', 'stock')->get();
         // return $request;
         if ($request->sort == "-id") {
+            // $product = Product::with('category', 'brand')->orderBy('id', 'desc')->paginate(20);
             $product = Product::with('category', 'brand')->orderBy('id', 'desc')->paginate(20);
         } else {
             $product = Product::with('category', 'brand')->paginate(20);

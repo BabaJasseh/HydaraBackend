@@ -15,12 +15,13 @@ class CreateCreditorsTable extends Migration
     {
         Schema::create('creditors', function (Blueprint $table) {
             $table->id();
+            $table->integer('category_id');
             $table->string('sellername');
             $table->string('customername');
-            $table->integer('totalprice');
+            $table->integer('totalSalePrice');
             $table->integer('amountpaid');
             $table->integer('balance');
-            $table->integer('paymentstatus');  /// 1 for completed 0 for incomplete
+            $table->integer('status');  /// 1 for completed 0 for incomplete
             $table->timestamps();
         });
     }

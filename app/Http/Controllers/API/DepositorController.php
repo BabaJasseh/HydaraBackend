@@ -128,6 +128,16 @@ class DepositorController extends Controller
         }
     }
 
+    public function depositorCount(){
+        $depositor = Depositor::count();
+        $simple_collection = collect([2,5,7,35,25,10]);
+        // $simple_collection->min()
+        return response()->json([
+            'status' => 422,
+            'depositorCount' => $depositor
+        ]);
+    }
+
     public function update(Request $request, $id){
         $validator = Validator::make($request->all(), [
             'firstname' => 'required|max:191',

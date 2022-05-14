@@ -19,6 +19,7 @@ class CreateSalesTable extends Migration
             $table->string('customername');
             $table->string('seller');
             $table->integer('amountpaid');
+            $table->integer('balance');
             $table->integer('totalSalePrice');
             $table->string('profit');
             $table->string('sellingprice');
