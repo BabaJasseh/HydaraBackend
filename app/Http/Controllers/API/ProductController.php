@@ -41,6 +41,7 @@ class ProductController extends Controller
             $product->description = $request->description;
             $product->costprice = $request->costprice;
             $product->totalQuantity = $request->totalQuantity;
+            $product->totalPrice = $request->costprice * $request->totalQuantity;
             $product->save();
             \Log::info($product);
             return response()->json([

@@ -16,6 +16,12 @@ use App\Http\Controllers\API\StockController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\UserTypeController;
+use App\Http\Controllers\API\PaymentController;
+use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\SellerInventoryController;
+use App\Http\Controllers\API\BorrowertransactionController;
+use App\Http\Controllers\API\CashExpenditureController;
+use App\Http\Controllers\API\ShopExpenditureController;
 use App\Models\Usertype;
 
 /*
@@ -109,6 +115,8 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::post('pay-borrowed-amount/{id}', [BorrowerController::class, 'payBorrowedAmount']);
         Route::get('edit-borrower/{id}', [BorrowerController::class, 'edit']);
         Route::post('update-borrower/{id}', [BorrowerController::class, 'update']);
+        Route::get('borrowers-transactions/{id}', [BorrowerController::class, 'transactionsOfBorrower']);
+        Route::post('store-borrower-transaction', [BorrowertransactionController::class, 'storeBorrowerTransaction']);
 
 
         ////////////////////////////////        Depositor      ///////////////////////////////
@@ -118,11 +126,14 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('transactions-of-depositor/{id}', [DepositorController::class, 'transactionsOfdepositor']);
         Route::get('edit-depositor/{id}', [DepositorController::class, 'edit']);
         Route::post('update-depositor/{id}', [DepositorController::class, 'update']);
+        Route::get('depositor-count', [DepositorController::class, 'depositorCount']);
+        
 
         ////////////////////////////////        Sales      ///////////////////////////////
         Route::post('store-sale', [SaleController::class, 'store']);
         Route::get('view-sales', [SaleController::class, 'index']);
         Route::get('view-all-sales', [SaleController::class, 'allSales']); //////// might be deleted
+        Route::get('view-all-creditors', [SaleController::class, 'creditors']); //////// might be deleted
         Route::get('view-electronic-sales', [SaleController::class, 'electronicsSales']);
         Route::get('view-mobile-sales', [SaleController::class, 'mobileSales']);
         Route::get('view-accessories-sales', [SaleController::class, 'accessoriesSales']);
@@ -130,6 +141,10 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('edit-sale/{id}', [SaleController::class, 'edit']);
         Route::post('update-sale/{id}', [SaleController::class, 'update']);
         Route::get('view-productsInSale/{SaleId}', [SaleController::class, 'productInSale']);
+        Route::post('add-payment/{SaleId}', [SaleController::class, 'addPayment']);
+        Route::get('top-five-mobile-sales', [SaleController::class, 'topMobileSales']);
+        Route::get('top-five-electronic-sales', [SaleController::class, 'topElectronicSales']);
+        Route::get('top-five-accessories-sales', [SaleController::class, 'topAccessoriesSales']);
         
 
         ////////////////////////////////        Creditors      ///////////////////////////////
@@ -138,6 +153,25 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::delete('delete-creditor/{id}', [CreditorController::class, 'destroy']);
         Route::get('edit-creditor/{id}', [CreditorController::class, 'edit']);
         Route::post('update-creditor/{id}', [CreditorController::class, 'update']);
+
+        ////////////////////////////////        Payments      ///////////////////////////////
+        Route::get('view-payments/{saleId}', [PaymentController::class, 'index']);
+        Route::delete('delete-payments/{id}', [PaymentController::class, 'destroy']);
+        Route::get('edit-payments/{id}', [PaymentController::class, 'edit']);
+
+        ////////////////////////////////        Users      ///////////////////////////////
+        Route::get('view-users', [UserController::class, 'index']);
+        Route::delete('delete-users/{id}', [UserController::class, 'destroy']);
+        Route::get('edit-users/{id}', [UserController::class, 'edit']);
+        Route::get('user-based-on-category/{id}', [UserController::class, 'usersBasedOnCategory']);
+
+
+        ////////////////////////////////        SellerInventory      ///////////////////////////////
+        Route::post('store-sellerInventory/{productId}', [SellerInventoryController::class, 'store']);
+        Route::post('update-sellerStock-quantity/{productId}', [SellerInventoryController::class, 'updateSellerStockQuantity']);
+        Route::get('view-sellerInventory/{productId}', [SellerInventoryController::class, 'index']);
+        Route::delete('delete-sellerInventory/{id}', [SellerInventoryController::class, 'destroy']);
+        Route::get('edit-sellerInventory/{id}', [SellerInventoryController::class, 'edit']);
 
 
         ////////////////////////////////        Transaction      ///////////////////////////////
@@ -154,14 +188,21 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('edit-salary/{id}', [SalaryController::class, 'edit']);
         Route::post('update-salary/{id}', [SalaryController::class, 'update']);
 
-        ////////////////////////////////        Expenditure      ///////////////////////////////
-        Route::post('store-expenditure', [ExpenditureController::class, 'store']);
-        Route::get('view-expenditure', [ExpenditureController::class, 'index']);
-        Route::delete('delete-expenditure/{id}', [ExpenditureController::class, 'destroy']);
-        Route::get('edit-expenditure/{id}', [ExpenditureController::class, 'edit']);
-        Route::post('update-expenditure/{id}', [ExpenditureController::class, 'update']);
+        ////////////////////////////////        CashExpenditure      ///////////////////////////////
+        Route::post('store-cash-expenditure', [CashExpenditureController::class, 'store']);
+        Route::get('view-cash-expenditure', [CashExpenditureController::class, 'index']);
+        Route::delete('delete-cash-expenditure/{id}', [CashExpenditureController::class, 'destroy']);
+        Route::get('edit-cash-expenditure/{id}', [CashExpenditureController::class, 'edit']);
+        Route::post('update-cash-expenditure/{id}', [CashExpenditureController::class, 'update']);
 
-        ////////////////////////////////        Expenditure      ///////////////////////////////
+        ////////////////////////////////        ShopExpenditure      ///////////////////////////////
+        Route::post('store-shop-expenditure', [ShopExpenditureController::class, 'store']);
+        Route::get('view-shop-expenditure', [ShopExpenditureController::class, 'index']);
+        Route::delete('delete-shop-expenditure/{id}', [ShopExpenditureController::class, 'destroy']);
+        Route::get('edit-shop-expenditure/{id}', [ShopExpenditureController::class, 'edit']);
+        Route::post('update-shop-expenditure/{id}', [ShopExpenditureController::class, 'update']);
+
+        ////////////////////////////////        UserType      ///////////////////////////////
         Route::get('user-types', [UserTypeController::class, 'index']);
     });
 });

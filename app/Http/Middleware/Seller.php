@@ -21,8 +21,8 @@ class Seller
         // return $next($request);
         if (JWTAuth::parseToken()->authenticate()) {
             if (
-                JWTAuth::user()->userType == 'MobileSeller' || JWTAuth::user()->userType == 'ElectronicSeller'
-                || JWTAuth::user()->userType == 'AccessoriesSeller' || JWTAuth::user()->userType == 'admin'
+                JWTAuth::user()->userType == 'mobileSeller' || JWTAuth::user()->userType == 'electronicDeviceSeller'
+                || JWTAuth::user()->userType == 'accessoriesSeller' || JWTAuth::user()->userType == 'admin'
             ) {
                 return $next($request);
             } else {

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Sale;
 use App\Models\Category;
 use App\Models\Stock;
+use App\Models\Sellerinventory;
 
 class Product extends Model
 {
@@ -25,6 +26,11 @@ class Product extends Model
     public function sales()
     {
         return $this->hasMany(Sale::class); // before it was belongs to many
+    }
+
+    public function sellerinventories()
+    {
+        return $this->hasMany(Sellerinventory::class); // before it was belongs to many
     }
 
     public function stock()

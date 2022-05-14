@@ -19,7 +19,9 @@ class SuperAdminMiddleware
     {
         // return $next($request);
         if (JWTAuth::parseToken()->authenticate()) {
-            if (JWTAuth::user()->userType == 'admin') {
+            // this was in the if condition initially
+            if (JWTAuth::user()->userType == 'mobileSeller' || JWTAuth::user()->userType == 'electronicDeviceSeller'
+            || JWTAuth::user()->userType == 'accessoriesSeller' || JWTAuth::user()->userType == 'admin') {
                 return $next($request);
             } else{
                 return response()->json([
