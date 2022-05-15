@@ -43,6 +43,7 @@ class CreditorController extends Controller
 
     public function store(Request $request, $id){
         $addAmount = $request->addAmount;
+        // $sale->date = Carbon::now()->toDateString();
         $previousAmount =  DB::table('creditors')->where('id', '=', $id)->first()->amountpaid;
         $balance =  DB::table('creditors')->where('id', '=', $id)->first()->balance;
         DB::table('creditors')->where('id', '=', $id)->update(['amountpaid' => $previousAmount + $addAmount, 'balance' => $balance - $addAmount]);
