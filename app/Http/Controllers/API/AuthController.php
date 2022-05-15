@@ -71,17 +71,17 @@ class AuthController extends Controller
         return $this->respondWithToken($token);
     }
 
-    public function info()
-    {
-        $data = [
-            "code" => 200,
-            "roles" => ["admin"],
-            "introduction" => "I am a super administrator",
-            "avatar" => ('/hydara_logo.png'),
-            "name" => "Super Admin"
-        ];
-        return response()->json($data, 200);
-    }
+    // public function info()
+    // {
+    //     $data = [
+    //         "code" => 200,
+    //         "roles" => ["admin"],
+    //         "introduction" => "I am a super administrator",
+    //         "avatar" => ('/hydara_logo.png'),
+    //         "name" => "Super Admin"
+    //     ];
+    //     return response()->json($data, 200);
+    // }
 
     // public function login(Request $request)
     // {
@@ -150,8 +150,21 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => config('jwt.ttl'),
-            'user_name' => JWTAuth::user()->name,
+            'firstname' => JWTAuth::user()->firstname,
             'user_type' => JWTAuth::user()->userType,
         ]);
+    }
+
+    public function info()
+    {
+        $roles = array(JWTAuth::user()->userType);
+        $data = [
+            "code" => 200,
+            "roles" => $roles,
+            "introduction" => "I am a super administrator",
+            "avatar" => ('/hydara_logo.png'),
+            "name" => JWTAuth::user()->firstname,
+        ];
+        return response()->json($data, 200);
     }
 }

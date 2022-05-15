@@ -134,6 +134,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('view-sales', [SaleController::class, 'index']);
         Route::get('view-all-sales', [SaleController::class, 'allSales']); //////// might be deleted
         Route::get('view-all-creditors', [SaleController::class, 'creditors']); //////// might be deleted
+        Route::get('view-detail-creditors-info', [SaleController::class, 'creditorsDetailInfo']); //////// might be deleted
         Route::get('view-electronic-sales', [SaleController::class, 'electronicsSales']);
         Route::get('view-mobile-sales', [SaleController::class, 'mobileSales']);
         Route::get('view-accessories-sales', [SaleController::class, 'accessoriesSales']);

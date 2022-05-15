@@ -147,12 +147,22 @@ class SaleController extends Controller
         return response()->json([
             'status' => 200,
             'allsales' => $allsales->sum('amountpaid'),
-            'salesToday' => Sale::where('date', '=', Carbon::now()->toDateString())->get(),
+            'totalAmountPaidToday' => Sale::where('date', '=', Carbon::now()->toDateString())->get()->sum('amountpaid'), 
+            'salesToday' => Sale::with('products')->where('date', '=', Carbon::now()->toDateString())->get(),
             'totalProfit' => Sale::sum('profit'),
             'totalAmountPaidToday' =>  Sale::where('date', '=', Carbon::now()->toDateString())->sum('amountPaid'),  
             'todaysProfit' => Sale::where('date', '=', Carbon::now()->toDateString())->sum('profit'),
             'noOfSaleToday' => Sale::where('date', '=', Carbon::now()->toDateString())->count(),        
         ]);
+    }
+    public function creditorsDetailInfo(){
+        
+        return response()->json([
+            'status' => 200,
+            'totalAmountPaidToday' => Sale::where('date', '=', Carbon::now()->toDateString())->where('status', '=', 'incomplete')->get()->sum('amountpaid'), 
+            'noOfCreditorsToday' => Sale::where('date', '=', Carbon::now()->toDateString())->where('status', '=', 'incomplete')->count(),        
+            'salesToday' => Sale::with('products')->where('date', '=', Carbon::now()->toDateString())->where('status', '=', 'incomplete')->get(),
+            'totalAmountPaidToday' =>  Sale::where('date', '=', Carbon::now()->toDateString())->where('status', '=', 'incomplete')->sum('amountPaid'),]);
     }
 
     public function allSales(Request $request){
