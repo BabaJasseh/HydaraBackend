@@ -37,13 +37,9 @@ class ShopExpenditureController extends Controller
             $shopExpenditure = Shopexpenditure::paginate(20);
         }
 
-        if ($request->name) {
+        if ($request->categoryName) {
             $order = $request->sort == '-id' ? 'DESC' : 'ASC';
-            $shopExpenditure = Shopexpenditure::where('name', 'LIKE', '%' . $request->name . '%')
-                ->with(
-                    'category',
-                    'brand',
-                )->orderBy('id', $order)->paginate(20);
+            $shopExpenditure = Shopexpenditure::where('categoryName', 'LIKE', '%' . $request->categoryName . '%')->orderBy('id', $order)->paginate(20);
         }
         $response = [
             'pagination' => [

@@ -56,13 +56,9 @@ class SalaryController extends Controller
             $product = Salary::paginate(20);
         }
 
-        if ($request->name) {
+        if ($request->staffname) {
             $order = $request->sort == '-id' ? 'DESC' : 'ASC';
-            $product = Salary::where('name', 'LIKE', '%' . $request->name . '%')
-                ->with(
-                    'category',
-                    'brand',
-                )->orderBy('id', $order)->paginate(20);
+            $product = Salary::where('staffname', 'LIKE', '%' . $request->staffname . '%')->orderBy('id', $order)->paginate(20);
         }
         $response = [
             'pagination' => [

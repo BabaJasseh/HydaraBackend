@@ -18,9 +18,10 @@ class ProductFactory extends Factory
             'name' => $this->faker->randomElement($array = array ('thinkpad','iphone10','flatscreen', 'smart computer')),
             'description' => $this->faker->sentence($nbWords = 6, $variableNbWords = true),
             'costprice' => $this->faker->numberBetween($min = 1000, $max = 9000) ,
-            // 'stock_id' => $this->faker->randomDigit,
             'totalQuantity' => $this->faker->randomElement($array = array ('20','10','30')),
-            'brand_id' => $this->faker->randomElement($array = array ('2','1','3', '4'))
+            'brand_id' => $this->faker->randomElement($array = array ('2','1','3', '4')),
+            'totalPrice' => $this->faker->numberBetween($min = 1000, $max = 9000) ,
+
     ];
     }
 }

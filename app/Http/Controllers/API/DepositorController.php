@@ -53,9 +53,9 @@ class DepositorController extends Controller
             $depositor = Depositor::with('transactions')->paginate(20);
         }
 
-        if ($request->name) {
+        if ($request->firstname) {
             $order = $request->sort == '-id' ? 'DESC' : 'ASC';
-            $depositor = Depositor::where('name', 'LIKE', '%' . $request->name . '%')
+            $depositor = Depositor::where('firstname', 'LIKE', '%' . $request->firstname . '%')
                 ->with(
                     'transactions',
                 )->orderBy('id', $order)->paginate(20);
@@ -88,9 +88,9 @@ class DepositorController extends Controller
             $depositor = Depositor::where('id', $id)->first()->transactions()->paginate(20);
         }
 
-        if ($request->name) {
+        if ($request->firstname) {
             $order = $request->sort == '-id' ? 'DESC' : 'ASC';
-            $depositor = Depositor::where('name', 'LIKE', '%' . $request->name . '%')
+            $depositor = Depositor::where('firstname', 'LIKE', '%' . $request->firstname . '%')
                 ->with(
                     'transactions',
                 )->orderBy('id', $order)->paginate(20);
@@ -129,12 +129,14 @@ class DepositorController extends Controller
     }
 
     public function depositorCount(){
-        $depositor = Depositor::count();
-        $simple_collection = collect([2,5,7,35,25,10]);
+
+        // $simple_collection = collect([2,5,7,35,25,10]);
         // $simple_collection->min()
+        $depositor = Depositor::all();
         return response()->json([
             'status' => 422,
-            'depositorCount' => $depositor
+            'depositorCount' => Depositor::count(),
+            'totalDeposits' => $depositor->sum('balance'),
         ]);
     }
 

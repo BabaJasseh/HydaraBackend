@@ -16,10 +16,11 @@ class DatabaseSeeder extends Seeder
     {
         //  \App\Models\User::factory(10)->create();
          $this->call(CategorySeeder::class);
-         $this->call(ProductSeeder::class);
          $this->call(BrandSeeder::class);
+         $this->call(ProductSeeder::class);
          $this->call(SalarySeeder::class);
-         $this->call(ExpenditureSeeder::class);
+         $this->call(ShopExpenditureSeeder::class);
+         $this->call(CashExpenditureSeeder::class);
          $this->call(StaffSeeder::class);
          $this->call(DepositorSeeder::class);
          $this->call(SaleSeeder::class);
@@ -28,5 +29,7 @@ class DatabaseSeeder extends Seeder
          $this->call(UserSeeder::class);
          $this->call(TransactionSeeder::class);
          $this->call(StockSeeder::class);
+         $this->call(PaymentSeeder::class);
+         $this->call(BorrowerTransactionSeeder::class);
     }
 }
