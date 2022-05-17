@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class ExpenditureFactory extends Factory
+class ShopExpenditureFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -14,9 +14,11 @@ class ExpenditureFactory extends Factory
     public function definition()
     {
         return [
-            'amount' => $this->faker->numberBetween($min = 1000, $max = 9000) ,
-            'name' => $this->faker->name,
+            'initialExpense' => $this->faker->numberBetween($min = 1000, $max = 9000) ,
+            'categoryName' => $this->faker->name,
+            'address' => $this->faker->state,
             'description' => $this->faker->sentence($nbWords = 6, $variableNbWords = true),
+
 
         ];
     }

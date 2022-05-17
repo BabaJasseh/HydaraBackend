@@ -72,6 +72,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('edit-product/{id}', [ProductController::class, 'edit']);
         Route::post('update-product/{id}', [ProductController::class, 'update']);
         Route::post('append-product-stock-quantity/{id}', [ProductController::class, 'appendStockToProduct']);
+        Route::get('stock-count', [ProductController::class, 'stockCount']);
 
 
         ////////////////////////////////        Category      ///////////////////////////////
@@ -117,6 +118,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::post('update-borrower/{id}', [BorrowerController::class, 'update']);
         Route::get('borrowers-transactions/{id}', [BorrowerController::class, 'transactionsOfBorrower']);
         Route::post('store-borrower-transaction', [BorrowertransactionController::class, 'storeBorrowerTransaction']);
+        Route::get('borrowers-count', [BorrowerController::class, 'borrowersCount']);
 
 
         ////////////////////////////////        Depositor      ///////////////////////////////
@@ -146,6 +148,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('top-five-mobile-sales', [SaleController::class, 'topMobileSales']);
         Route::get('top-five-electronic-sales', [SaleController::class, 'topElectronicSales']);
         Route::get('top-five-accessories-sales', [SaleController::class, 'topAccessoriesSales']);
+        Route::get('creditors-count', [SaleController::class, 'creditorsCount']);
         
 
         ////////////////////////////////        Creditors      ///////////////////////////////
@@ -165,6 +168,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::delete('delete-users/{id}', [UserController::class, 'destroy']);
         Route::get('edit-users/{id}', [UserController::class, 'edit']);
         Route::get('user-based-on-category/{id}', [UserController::class, 'usersBasedOnCategory']);
+        Route::get('users-count', [UserController::class, 'usersCount']);
 
 
         ////////////////////////////////        SellerInventory      ///////////////////////////////

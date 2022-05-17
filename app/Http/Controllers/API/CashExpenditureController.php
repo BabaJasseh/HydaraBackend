@@ -39,13 +39,9 @@ class CashExpenditureController extends Controller
             $cashExpenditure = Cashexpenditure::paginate(20);
         }
 
-        if ($request->name) {
+        if ($request->categoryName) {
             $order = $request->sort == '-id' ? 'DESC' : 'ASC';
-            $cashExpenditure = Cashexpenditure::where('name', 'LIKE', '%' . $request->name . '%')
-                ->with(
-                    'category',
-                    'brand',
-                )->orderBy('id', $order)->paginate(20);
+            $cashExpenditure = Cashexpenditure::where('categoryName', 'LIKE', '%' . $request->categoryName . '%')->orderBy('id', $order)->paginate(20);
         }
         $response = [
             'pagination' => [

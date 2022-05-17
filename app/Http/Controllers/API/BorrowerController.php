@@ -65,11 +65,11 @@ class BorrowerController extends Controller
             $borrower = Borrower::with('borrowertransactions')->paginate(20);
         }
 
-        if ($request->name) {
+        if ($request->firstname) {
             $order = $request->sort == '-id' ? 'DESC' : 'ASC';
-            $borrower = Borrower::where('name', 'LIKE', '%' . $request->name . '%')
+            $borrower = Borrower::where('firstname', 'LIKE', '%' . $request->firstname . '%')
                 ->with(
-                    'transactions',
+                    'borrowertransactions',
                 )->orderBy('id', $order)->paginate(20);
         }
         $response = [
@@ -100,9 +100,9 @@ class BorrowerController extends Controller
             $borrower = Borrower::where('id', $id)->first()->borrowertransactions()->paginate(20);
         }
 
-        if ($request->name) {
+        if ($request->firstname) {
             $order = $request->sort == '-id' ? 'DESC' : 'ASC';
-            $borrower = Borrower::where('name', 'LIKE', '%' . $request->name . '%')
+            $borrower = Borrower::where('firstname', 'LIKE', '%' . $request->firstname . '%')
                 ->with(
                     'transactions',
                 )->orderBy('id', $order)->paginate(20);
@@ -139,6 +139,16 @@ class BorrowerController extends Controller
             ]);
         }
     }
+
+    public function borrowersCount(){
+        $borrower = Borrower::all();
+        return response()->json([
+            'status' => 422,
+            'borrowerCount' => Borrower::count(),
+            'totalBorrowedAmount' => Borrower::sum('balance'),
+        ]);
+    }
+
 
     public function update(Request $request, $id){
         $validator = Validator::make($request->all(), [

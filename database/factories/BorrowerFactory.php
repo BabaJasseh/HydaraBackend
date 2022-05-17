@@ -16,11 +16,12 @@ class BorrowerFactory extends Factory
         return [
             'firstname' => $this->faker->firstNameMale,
             'lastname' => $this->faker->lastName,
-            'paymentStatus' => $this->faker->randomElement($array = array ('0','1',)),
-            'amountBorrowed' => $this->faker->numberBetween($min = 1000, $max = 9000),
+            'initialBorrow' => $this->faker->numberBetween($min = 1000, $max = 9000),
             'telephone' => $this->faker->randomNumber($nbDigits = NULL, $strict = false) ,
             'description' => $this->faker->sentence($nbWords = 6, $variableNbWords = true),
             'address' => $this->faker->state,
+            'balance' => $this->faker->numberBetween($min = 1000, $max = 9000),
+
         ];
     }
 }

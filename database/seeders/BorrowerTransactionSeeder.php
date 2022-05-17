@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\Expenditure;
+use App\Models\Borrowertransaction;
 use Illuminate\Database\Seeder;
 
-class ExpenditureSeeder extends Seeder
+class BorrowerTransactionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,7 +14,6 @@ class ExpenditureSeeder extends Seeder
      */
     public function run()
     {
-        Expenditure::factory()->count(20)->create();
-
+        Borrowertransaction::factory()->count(10)->create();
     }
 }

@@ -15,18 +15,17 @@ class CreateSalesTable extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            $table->integer('category_id');
             $table->string('customername');
             $table->string('seller');
             $table->integer('amountpaid');
             $table->integer('balance');
             $table->integer('totalSalePrice');
-            $table->string('profit');
-            $table->string('sellingprice');
+            $table->integer('profit')->default(0);
             $table->string('date');
             $table->string('status');
-            // $table->integer('productsbought');
             $table->timestamps();
+            $table->foreignId('category_id')->constrained('categories')->onUpdate('cascade');
+
         });
     }
 

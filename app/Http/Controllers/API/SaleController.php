@@ -65,7 +65,19 @@ class SaleController extends Controller
             
             $count = $request->productsInSale;
             for ($i=0; $i < count($count); $i++) { 
+                
+                $testSellerStockProductQuantity =  DB::table('sellerinventories')->where('product_id', '=', $request->productsInSale[$i])->where('user_id', '=', JWTAuth::user()->id)->first();
+                // \Log::info( $testSellerStockProductQuantity == null);
+                if ($testSellerStockProductQuantity == null) {
+                    return response()->json([
+                        'status' => 404,
+                        'message' => 'product not for you',
+                    ]);
+                    break;
+                }
                 $sellerStockProductQuantity =  DB::table('sellerinventories')->where('product_id', '=', $request->productsInSale[$i])->where('user_id', '=', JWTAuth::user()->id)->first()->sellerStockQuantity;
+                
+             
                 if ($sellerStockProductQuantity < $request->quantityArr[$i]) {
                     return response()->json([
                         'status' => 204,
@@ -141,6 +153,15 @@ class SaleController extends Controller
         ]);
     }
 
+    public function creditorsCount(){
+        $creditors = Sale::where('status', '=', 'incomplete')->get();
+        return response()->json([
+            'status' => 422,
+            'creditorsCount' => Sale::where('status', '=', 'incomplete')->count(),
+            'totalCredits' => $creditors->sum('balance'),
+        ]);
+    }
+
     public function index(){
 
          $allsales = Sale::all(); 
@@ -172,9 +193,9 @@ class SaleController extends Controller
             $allsales = Sale::with('products', 'payments')->paginate(20);
         }
 
-        if ($request->name) {
+        if ($request->customername) {
             $order = $request->sort == '-id' ? 'DESC' : 'ASC';
-            $allsales = Sale::where('name', 'LIKE', '%' . $request->name . '%')
+            $allsales = Sale::where('customername', 'LIKE', '%' . $request->customername . '%')
                 ->with(
                     'products',
                 )->orderBy('id', $order)->paginate(20);
@@ -204,9 +225,9 @@ class SaleController extends Controller
             $creditors = Sale::where('status', '=', 'incomplete')->with('products')->paginate(20);
         }
 
-        if ($request->name) {
+        if ($request->customername) {
             $order = $request->sort == '-id' ? 'DESC' : 'ASC';
-            $creditors = Sale::where('name', 'LIKE', '%' . $request->name . '%')
+            $creditors = Sale::where('customername', 'LIKE', '%' . $request->customername . '%')
                 ->with(
                     'products',
                 )->orderBy('id', $order)->paginate(20);
@@ -236,9 +257,9 @@ class SaleController extends Controller
             $mobileSales = Sale::where('category_id', '=', 3)->with('products', 'payments')->paginate(20);
         }
 
-        if ($request->name) {
+        if ($request->customername) {
             $order = $request->sort == '-id' ? 'DESC' : 'ASC';
-            $mobileSales = Sale::where('name', 'LIKE', '%' . $request->name . '%')
+            $mobileSales = Sale::where('customername', 'LIKE', '%' . $request->customername . '%')
                 ->with(
                     'products',
                 )->orderBy('id', $order)->paginate(20);
@@ -270,9 +291,9 @@ class SaleController extends Controller
             $accessoriesSales = Sale::where('category_id', '=', 1)->with('products', 'payments')->paginate(20);
         }
 
-        if ($request->name) {
+        if ($request->customername) {
             $order = $request->sort == '-id' ? 'DESC' : 'ASC';
-            $accessoriesSales = Sale::where('name', 'LIKE', '%' . $request->name . '%')
+            $accessoriesSales = Sale::where('customername', 'LIKE', '%' . $request->customername . '%')
                 ->with(
                     'products',
                 )->orderBy('id', $order)->paginate(20);
@@ -303,9 +324,9 @@ class SaleController extends Controller
             $electronicSales = Sale::where('category_id', '=', 2)->with('products', 'payments')->paginate(20);
         }
 
-        if ($request->name) {
+        if ($request->customername) {
             $order = $request->sort == '-id' ? 'DESC' : 'ASC';
-            $electronicSales = Sale::where('name', 'LIKE', '%' . $request->name . '%')
+            $electronicSales = Sale::where('customername', 'LIKE', '%' . $request->customername . '%')
                 ->with(
                     'products',
                 )->orderBy('id', $order)->paginate(20);

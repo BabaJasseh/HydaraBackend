@@ -62,9 +62,9 @@ class BorrowerTransactionController extends Controller
             $borrowertransaction = Borrowertransaction::with('borrower')->paginate(20);
         }
 
-        if ($request->name) {
+        if ($request->firstname) {
             $order = $request->sort == '-id' ? 'DESC' : 'ASC';
-            $borrowertransaction = Borrowertransaction::where('name', 'LIKE', '%' . $request->name . '%')
+            $borrowertransaction = Borrowertransaction::where('firstname', 'LIKE', '%' . $request->firstname . '%')
                 ->with(
                     'depositor',
                 )->orderBy('id', $order)->paginate(20);
