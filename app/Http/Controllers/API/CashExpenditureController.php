@@ -17,10 +17,29 @@ class CashExpenditureController extends Controller
         $cashExpenditure->description = $request->description;
         $cashExpenditure->initialExpense = $request->initialExpense;
         $cashExpenditure->save();
-         //////////////////////////////   subtract the withdraw amount to the cashes.cashathand //////////////////
-         $previousCashAthand = DB::table('cashes')->first()->cashAthand;
-         DB::table('cashes')->update(['cashAthand' => $previousCashAthand - $request->sellingprice - $request->amount]);
-         /////////////////////
+           ////////////////////////   this the logic to add the amount  to the total expenditures //////////////////
+           $previousTotalExpense = DB::table('cashes')->first();
+           if ($previousTotalExpense == null) {
+               $cash = new Cash();
+               $cash->totalExpense = $request->initialExpense;
+               $cash->save();
+           } else{
+               $previousTotalExpense = DB::table('cashes')->first()->totalExpense;
+               DB::table('cashes')->update(['totalExpense' => $previousTotalExpense + $request->initialExpense]);
+           }
+           /////////////////////  the logic for expenditures ends here  ////////////////////////
+
+           ////////////////////////   this the logic to add the amount paid to the current balance //////////////////
+           $previousCurrentBalance = DB::table('cashes')->first();
+           if ($previousCurrentBalance == null) {
+               $cash = new Cash();
+               $cash->currentBalance = $request->initialExpense;
+               $cash->save();
+           } else{
+               $previousCurrentBalance = DB::table('cashes')->first()->currentBalance;
+               DB::table('cashes')->update(['currentBalance' => $previousCurrentBalance - $request->initialExpense]);
+           }
+           /////////////////////  the logic ends here  ////////////////////////
          
         return response()->json([
             'status' => 200,

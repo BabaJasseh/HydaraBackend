@@ -7,6 +7,7 @@ use App\Models\Creditor;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\Payment;
+use App\Models\Cash;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -97,8 +98,16 @@ class SaleController extends Controller
             $profit = $request->totalSalePrice - $salesTotalCostprice;
             DB::table('sales')->where('id', '=', $sale->id)->update(['profit' => $profit]);
            
-            // $previousCashAthand = DB::table('cashes')->first()->cashAthand;
-            // DB::table('cashes')->update(['cashAthand' => $previousCashAthand - $request->sellingprice - $request->amountPaid]);
+            ////////////////////////   this the logic to add the amount paid to the current balance//////////////////
+            $previousCurrentBalance = DB::table('cashes')->first();
+            if ($previousCurrentBalance == null) {
+                $cash = new Cash();
+                $cash->currentBalance = $request->amountPaid;
+                $cash->save();
+            } else{
+                $previousCurrentBalance = DB::table('cashes')->first()->currentBalance;
+                DB::table('cashes')->update(['currentBalance' => $previousCurrentBalance + $request->amountPaid]);
+            }
 
             /////////////////////////  WANT TO ADD TO THE PAYMENT TABLES SOME OF THE SALES VALUES ///////////
             $payment = new Payment();
@@ -107,6 +116,7 @@ class SaleController extends Controller
             $payment->description = "None";
             $payment->balance = $request->totalSalePrice - $request->amountPaid;
             $payment->save();
+
 
             return response()->json([
                 'status' => 200,
@@ -147,6 +157,17 @@ class SaleController extends Controller
         $payment->balance = $newBalance;
         $payment->amount = $request->amountToAdd;
         $payment->save();
+         ////////////////////////   this the logic to add the amount paid to the current balance //////////////////
+         $previousCurrentBalance = DB::table('cashes')->first();
+         if ($previousCurrentBalance == null) {
+             $cash = new Cash();
+             $cash->currentBalance = $request->amountToAdd;
+             $cash->save();
+         } else{
+             $previousCurrentBalance = DB::table('cashes')->first()->currentBalance;
+             DB::table('cashes')->update(['currentBalance' => $previousCurrentBalance + $request->amountToAdd]);
+         }
+         /////////////////////  the logic ends here  ////////////////////////
         return response()->json([
             'status' => 200,
             'result' => $newTotalAmountPaid,
@@ -162,12 +183,21 @@ class SaleController extends Controller
         ]);
     }
 
+    public function currentBalanceAndExpenditures(){
+        return response()->json([
+            'status' => 422,
+            'currentBalance' => Cash::sum('currentBalance'),
+            'totalExpenses' => Cash::sum('totalExpense'),
+        ]);
+    }
+
     public function index(){
 
          $allsales = Sale::all(); 
         return response()->json([
             'status' => 200,
             'allsales' => $allsales->sum('amountpaid'),
+            'totalGrandSales' => $allsales->sum('totalSalePrice'),
             'totalAmountPaidToday' => Sale::where('date', '=', Carbon::now()->toDateString())->get()->sum('amountpaid'), 
             'salesToday' => Sale::with('products')->where('date', '=', Carbon::now()->toDateString())->get(),
             'totalProfit' => Sale::sum('profit'),

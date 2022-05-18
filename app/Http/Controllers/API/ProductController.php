@@ -57,7 +57,7 @@ class ProductController extends Controller
         return response()->json([
             'status' => 422,
             'stockCount' => Product::count(),
-            'totalProducts' => Product::sum('totalPrice'),
+            'totalProductsAmount' => Product::sum('totalPrice'),
         ]);
     }
 
