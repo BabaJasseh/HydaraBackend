@@ -33,6 +33,7 @@ class DepositorController extends Controller
             $depositor->initialDeposit = $request->initialDeposit;
             $depositor->balance = $depositor->initialDeposit;
             $depositor->save();
+            
             return response()->json([
                 'status' => 200,
                 'message' => 'Depositor added successfully',

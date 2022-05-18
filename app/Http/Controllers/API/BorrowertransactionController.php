@@ -29,14 +29,36 @@ class BorrowerTransactionController extends Controller
             $previousBalance = DB::table('borrowers')->where('id', '=', $request->borrower_id)->first()->balance;
             if ($request->action == "repay") {
                 DB::table('borrowers')->where('id', '=', $request->borrower_id)->update(['balance' => $previousBalance - $request->amount]);
-                 //////////////////////////////   add the deposit amount to the cashes.cashathand //////////////////
-                $previousCashAthand = DB::table('cashes')->first()->cashAthand;
-                DB::table('cashes')->update(['cashAthand' => $previousCashAthand + $request->amount]);
+
+                   ////////////////////////   this the logic to add the amount paid to the current balance //////////////////
+                    $previousCurrentBalance = DB::table('cashes')->first();
+                    if ($previousCurrentBalance == null) {
+                        $cash = new Cash();
+                        $cash->currentBalance = $request->amount;
+                        $cash->save();
+                    } else{
+                        $previousCurrentBalance = DB::table('cashes')->first()->currentBalance;
+                        DB::table('cashes')->update(['currentBalance' => $previousCurrentBalance + $request->amount]);
+                    }
+                    /////////////////////  the logic ends here  ////////////////////////
+
             } elseif($request->action == "borrow"){
                 DB::table('borrowers')->where('id', '=', $request->borrower_id)->update(['balance' => $previousBalance + $request->amount]);
                 //////////////////////////////   subtract the withdraw amount to the cashes.cashathand //////////////////
                 $previousCashAthand = DB::table('cashes')->first()->cashAthand;
                 DB::table('cashes')->update(['cashAthand' => $previousCashAthand - $request->amount]);
+
+                   ////////////////////////   this the logic to add the amount paid to the current balance //////////////////
+                    $previousCurrentBalance = DB::table('cashes')->first();
+                    if ($previousCurrentBalance == null) {
+                        $cash = new Cash();
+                        $cash->currentBalance = $request->amount;
+                        $cash->save();
+                    } else{
+                        $previousCurrentBalance = DB::table('cashes')->first()->currentBalance;
+                        DB::table('cashes')->update(['currentBalance' => $previousCurrentBalance - $request->amount]);
+                    }
+                    /////////////////////  the logic ends here  ////////////////////////
             }
 
             // if you borrow your balance increases and decreases when you repay

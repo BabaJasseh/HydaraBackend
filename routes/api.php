@@ -149,6 +149,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('top-five-electronic-sales', [SaleController::class, 'topElectronicSales']);
         Route::get('top-five-accessories-sales', [SaleController::class, 'topAccessoriesSales']);
         Route::get('creditors-count', [SaleController::class, 'creditorsCount']);
+        Route::get('current-blance-and-expenses', [SaleController::class, 'currentBalanceAndExpenditures']);
         
 
         ////////////////////////////////        Creditors      ///////////////////////////////
