@@ -22,7 +22,7 @@ class CreateBorrowersTable extends Migration
             $table->string('address');
             $table->integer('balance');
             // $table->integer('initialDeposit');
-             $table->integer('initialBorrow');
+            $table->integer('initialBorrow');
             $table->timestamps();
         });
     }

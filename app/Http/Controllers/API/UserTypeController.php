@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\Usertype;
+use App\Models\UserType;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
 
@@ -23,16 +23,18 @@ class UserTypeController extends Controller
     //     ]);
     // }
 
-    public function index(){
+    public function index()
+    {
         // $user = Student::with('classe')->get();
-        $user = Usertype::all();
+        $user = UserType::all();
         return response()->json([
             'status' => 200,
-            'result' => $user,           
+            'result' => $user,
         ]);
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $user = User::find($id);
         if ($user) {
             $user->delete();
@@ -47,6 +49,4 @@ class UserTypeController extends Controller
             ]);
         }
     }
-
-
 }

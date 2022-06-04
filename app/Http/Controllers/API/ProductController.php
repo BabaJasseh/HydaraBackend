@@ -43,12 +43,10 @@ class ProductController extends Controller
             $product->totalQuantity = $request->totalQuantity;
             $product->totalPrice = $request->costprice * $request->totalQuantity;
             $product->save();
-            \Log::info($product);
             return response()->json([
                 'status' => 200,
                 'message' => 'Product added successfully',
             ]);
-            
         }
     }
 
@@ -99,8 +97,9 @@ class ProductController extends Controller
         ]);
     }
 
-    public function appendStockToProduct(Request $request, $productId){
-       
+    public function appendStockToProduct(Request $request, $productId)
+    {
+
         $productQuantity =  DB::table('products')->where('id', '=', $productId)->first()->totalQuantity;
         $newQuantity = $productQuantity + $request->quantityToAppend;
         DB::table('products')->where('id', '=', $productId)->update(['totalQuantity' => $newQuantity]);

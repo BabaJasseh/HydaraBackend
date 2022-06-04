@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Usertype as ModelsUsertype;
+use App\Models\Usertype;
 use Illuminate\Database\Seeder;
 
 class UserTypeSeeder extends Seeder
@@ -14,6 +14,6 @@ class UserTypeSeeder extends Seeder
      */
     public function run()
     {
-        ModelsUsertype::factory()->count(4)->create();
+        Usertype::factory()->count(4)->create();
     }
 }

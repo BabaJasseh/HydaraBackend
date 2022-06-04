@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class UserTypeFactory extends Factory
+class UsertypeFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -14,7 +14,7 @@ class UserTypeFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->randomElement($array = array ('admin','seller','cashier')),
+            'name' => $this->faker->randomElement($array = array('admin', 'seller', 'cashier')),
         ];
     }
 }
