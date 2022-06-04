@@ -22,7 +22,7 @@ use App\Http\Controllers\API\SellerInventoryController;
 use App\Http\Controllers\API\BorrowertransactionController;
 use App\Http\Controllers\API\CashExpenditureController;
 use App\Http\Controllers\API\ShopExpenditureController;
-use App\Models\Usertype;
+use App\Models\UserType;
 
 /*
 |--------------------------------------------------------------------------
@@ -127,7 +127,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('edit-depositor/{id}', [DepositorController::class, 'edit']);
         Route::post('update-depositor/{id}', [DepositorController::class, 'update']);
         Route::get('depositor-count', [DepositorController::class, 'depositorCount']);
-        
+
 
         ////////////////////////////////        Sales      ///////////////////////////////
         Route::post('store-sale', [SaleController::class, 'store']);
@@ -145,7 +145,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('top-five-mobile-sales', [SaleController::class, 'topMobileSales']);
         Route::get('top-five-electronic-sales', [SaleController::class, 'topElectronicSales']);
         Route::get('top-five-accessories-sales', [SaleController::class, 'topAccessoriesSales']);
-        
+
 
         ////////////////////////////////        Creditors      ///////////////////////////////
         Route::post('store-creditor/{id}', [CreditorController::class, 'store']);
