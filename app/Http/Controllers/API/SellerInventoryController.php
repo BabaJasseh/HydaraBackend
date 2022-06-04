@@ -59,9 +59,9 @@ class SellerInventoryController extends Controller
             $Sellerinventory = Sellerinventory::where('product_id', '=' ,$productId)->paginate(20);
         }
 
-        if ($request->name) {
+        if ($request->sellername) {
             $order = $request->sort == '-id' ? 'DESC' : 'ASC';
-            $Sellerinventory = Sellerinventory::where('name', 'LIKE', '%' . $request->name . '%')
+            $Sellerinventory = Sellerinventory::where('sellername', 'LIKE', '%' . $request->sellername . '%')
                 ->with(
                     'products',
                 )->orderBy('id', $order)->paginate(20);

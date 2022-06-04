@@ -72,6 +72,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('edit-product/{id}', [ProductController::class, 'edit']);
         Route::post('update-product/{id}', [ProductController::class, 'update']);
         Route::post('append-product-stock-quantity/{id}', [ProductController::class, 'appendStockToProduct']);
+        Route::get('stock-count', [ProductController::class, 'stockCount']);
 
 
         ////////////////////////////////        Category      ///////////////////////////////
@@ -117,6 +118,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::post('update-borrower/{id}', [BorrowerController::class, 'update']);
         Route::get('borrowers-transactions/{id}', [BorrowerController::class, 'transactionsOfBorrower']);
         Route::post('store-borrower-transaction', [BorrowertransactionController::class, 'storeBorrowerTransaction']);
+        Route::get('borrowers-count', [BorrowerController::class, 'borrowersCount']);
 
 
         ////////////////////////////////        Depositor      ///////////////////////////////
@@ -134,6 +136,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('view-sales', [SaleController::class, 'index']);
         Route::get('view-all-sales', [SaleController::class, 'allSales']); //////// might be deleted
         Route::get('view-all-creditors', [SaleController::class, 'creditors']); //////// might be deleted
+        Route::get('view-detail-creditors-info', [SaleController::class, 'creditorsDetailInfo']); //////// might be deleted
         Route::get('view-electronic-sales', [SaleController::class, 'electronicsSales']);
         Route::get('view-mobile-sales', [SaleController::class, 'mobileSales']);
         Route::get('view-accessories-sales', [SaleController::class, 'accessoriesSales']);
@@ -145,7 +148,9 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('top-five-mobile-sales', [SaleController::class, 'topMobileSales']);
         Route::get('top-five-electronic-sales', [SaleController::class, 'topElectronicSales']);
         Route::get('top-five-accessories-sales', [SaleController::class, 'topAccessoriesSales']);
-
+        Route::get('creditors-count', [SaleController::class, 'creditorsCount']);
+        Route::get('current-blance-and-expenses', [SaleController::class, 'currentBalanceAndExpenditures']);
+        
 
         ////////////////////////////////        Creditors      ///////////////////////////////
         Route::post('store-creditor/{id}', [CreditorController::class, 'store']);
@@ -164,6 +169,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::delete('delete-users/{id}', [UserController::class, 'destroy']);
         Route::get('edit-users/{id}', [UserController::class, 'edit']);
         Route::get('user-based-on-category/{id}', [UserController::class, 'usersBasedOnCategory']);
+        Route::get('users-count', [UserController::class, 'usersCount']);
 
 
         ////////////////////////////////        SellerInventory      ///////////////////////////////

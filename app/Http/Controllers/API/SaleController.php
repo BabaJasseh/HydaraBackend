@@ -7,6 +7,7 @@ use App\Models\Creditor;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\Payment;
+use App\Models\Cash;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -65,7 +66,19 @@ class SaleController extends Controller
             
             $count = $request->productsInSale;
             for ($i=0; $i < count($count); $i++) { 
+                
+                $testSellerStockProductQuantity =  DB::table('sellerinventories')->where('product_id', '=', $request->productsInSale[$i])->where('user_id', '=', JWTAuth::user()->id)->first();
+                // \Log::info( $testSellerStockProductQuantity == null);
+                if ($testSellerStockProductQuantity == null) {
+                    return response()->json([
+                        'status' => 404,
+                        'message' => 'product not for you',
+                    ]);
+                    break;
+                }
                 $sellerStockProductQuantity =  DB::table('sellerinventories')->where('product_id', '=', $request->productsInSale[$i])->where('user_id', '=', JWTAuth::user()->id)->first()->sellerStockQuantity;
+                
+             
                 if ($sellerStockProductQuantity < $request->quantityArr[$i]) {
                     return response()->json([
                         'status' => 204,
@@ -85,8 +98,16 @@ class SaleController extends Controller
             $profit = $request->totalSalePrice - $salesTotalCostprice;
             DB::table('sales')->where('id', '=', $sale->id)->update(['profit' => $profit]);
            
-            // $previousCashAthand = DB::table('cashes')->first()->cashAthand;
-            // DB::table('cashes')->update(['cashAthand' => $previousCashAthand - $request->sellingprice - $request->amountPaid]);
+            ////////////////////////   this the logic to add the amount paid to the current balance//////////////////
+            $previousCurrentBalance = DB::table('cashes')->first();
+            if ($previousCurrentBalance == null) {
+                $cash = new Cash();
+                $cash->currentBalance = $request->amountPaid;
+                $cash->save();
+            } else{
+                $previousCurrentBalance = DB::table('cashes')->first()->currentBalance;
+                DB::table('cashes')->update(['currentBalance' => $previousCurrentBalance + $request->amountPaid]);
+            }
 
             /////////////////////////  WANT TO ADD TO THE PAYMENT TABLES SOME OF THE SALES VALUES ///////////
             $payment = new Payment();
@@ -95,6 +116,7 @@ class SaleController extends Controller
             $payment->description = "None";
             $payment->balance = $request->totalSalePrice - $request->amountPaid;
             $payment->save();
+
 
             return response()->json([
                 'status' => 200,
@@ -135,9 +157,37 @@ class SaleController extends Controller
         $payment->balance = $newBalance;
         $payment->amount = $request->amountToAdd;
         $payment->save();
+         ////////////////////////   this the logic to add the amount paid to the current balance //////////////////
+         $previousCurrentBalance = DB::table('cashes')->first();
+         if ($previousCurrentBalance == null) {
+             $cash = new Cash();
+             $cash->currentBalance = $request->amountToAdd;
+             $cash->save();
+         } else{
+             $previousCurrentBalance = DB::table('cashes')->first()->currentBalance;
+             DB::table('cashes')->update(['currentBalance' => $previousCurrentBalance + $request->amountToAdd]);
+         }
+         /////////////////////  the logic ends here  ////////////////////////
         return response()->json([
             'status' => 200,
             'result' => $newTotalAmountPaid,
+        ]);
+    }
+
+    public function creditorsCount(){
+        $creditors = Sale::where('status', '=', 'incomplete')->get();
+        return response()->json([
+            'status' => 422,
+            'creditorsCount' => Sale::where('status', '=', 'incomplete')->count(),
+            'totalCredits' => $creditors->sum('balance'),
+        ]);
+    }
+
+    public function currentBalanceAndExpenditures(){
+        return response()->json([
+            'status' => 422,
+            'currentBalance' => Cash::sum('currentBalance'),
+            'totalExpenses' => Cash::sum('totalExpense'),
         ]);
     }
 
@@ -147,12 +197,23 @@ class SaleController extends Controller
         return response()->json([
             'status' => 200,
             'allsales' => $allsales->sum('amountpaid'),
-            'salesToday' => Sale::where('date', '=', Carbon::now()->toDateString())->get(),
+            'totalGrandSales' => $allsales->sum('totalSalePrice'),
+            'totalAmountPaidToday' => Sale::where('date', '=', Carbon::now()->toDateString())->get()->sum('amountpaid'), 
+            'salesToday' => Sale::with('products')->where('date', '=', Carbon::now()->toDateString())->get(),
             'totalProfit' => Sale::sum('profit'),
             'totalAmountPaidToday' =>  Sale::where('date', '=', Carbon::now()->toDateString())->sum('amountPaid'),  
             'todaysProfit' => Sale::where('date', '=', Carbon::now()->toDateString())->sum('profit'),
             'noOfSaleToday' => Sale::where('date', '=', Carbon::now()->toDateString())->count(),        
         ]);
+    }
+    public function creditorsDetailInfo(){
+        
+        return response()->json([
+            'status' => 200,
+            'totalAmountPaidToday' => Sale::where('date', '=', Carbon::now()->toDateString())->where('status', '=', 'incomplete')->get()->sum('amountpaid'), 
+            'noOfCreditorsToday' => Sale::where('date', '=', Carbon::now()->toDateString())->where('status', '=', 'incomplete')->count(),        
+            'salesToday' => Sale::with('products')->where('date', '=', Carbon::now()->toDateString())->where('status', '=', 'incomplete')->get(),
+            'totalAmountPaidToday' =>  Sale::where('date', '=', Carbon::now()->toDateString())->where('status', '=', 'incomplete')->sum('amountPaid'),]);
     }
 
     public function allSales(Request $request){
@@ -162,9 +223,9 @@ class SaleController extends Controller
             $allsales = Sale::with('products', 'payments')->paginate(20);
         }
 
-        if ($request->name) {
+        if ($request->customername) {
             $order = $request->sort == '-id' ? 'DESC' : 'ASC';
-            $allsales = Sale::where('name', 'LIKE', '%' . $request->name . '%')
+            $allsales = Sale::where('customername', 'LIKE', '%' . $request->customername . '%')
                 ->with(
                     'products',
                 )->orderBy('id', $order)->paginate(20);
@@ -194,9 +255,9 @@ class SaleController extends Controller
             $creditors = Sale::where('status', '=', 'incomplete')->with('products')->paginate(20);
         }
 
-        if ($request->name) {
+        if ($request->customername) {
             $order = $request->sort == '-id' ? 'DESC' : 'ASC';
-            $creditors = Sale::where('name', 'LIKE', '%' . $request->name . '%')
+            $creditors = Sale::where('customername', 'LIKE', '%' . $request->customername . '%')
                 ->with(
                     'products',
                 )->orderBy('id', $order)->paginate(20);
@@ -226,9 +287,9 @@ class SaleController extends Controller
             $mobileSales = Sale::where('category_id', '=', 3)->with('products', 'payments')->paginate(20);
         }
 
-        if ($request->name) {
+        if ($request->customername) {
             $order = $request->sort == '-id' ? 'DESC' : 'ASC';
-            $mobileSales = Sale::where('name', 'LIKE', '%' . $request->name . '%')
+            $mobileSales = Sale::where('customername', 'LIKE', '%' . $request->customername . '%')
                 ->with(
                     'products',
                 )->orderBy('id', $order)->paginate(20);
@@ -260,9 +321,9 @@ class SaleController extends Controller
             $accessoriesSales = Sale::where('category_id', '=', 1)->with('products', 'payments')->paginate(20);
         }
 
-        if ($request->name) {
+        if ($request->customername) {
             $order = $request->sort == '-id' ? 'DESC' : 'ASC';
-            $accessoriesSales = Sale::where('name', 'LIKE', '%' . $request->name . '%')
+            $accessoriesSales = Sale::where('customername', 'LIKE', '%' . $request->customername . '%')
                 ->with(
                     'products',
                 )->orderBy('id', $order)->paginate(20);
@@ -293,9 +354,9 @@ class SaleController extends Controller
             $electronicSales = Sale::where('category_id', '=', 2)->with('products', 'payments')->paginate(20);
         }
 
-        if ($request->name) {
+        if ($request->customername) {
             $order = $request->sort == '-id' ? 'DESC' : 'ASC';
-            $electronicSales = Sale::where('name', 'LIKE', '%' . $request->name . '%')
+            $electronicSales = Sale::where('customername', 'LIKE', '%' . $request->customername . '%')
                 ->with(
                     'products',
                 )->orderBy('id', $order)->paginate(20);

@@ -19,8 +19,8 @@ class UserFactory extends Factory
             'lastname' => $this->faker->lastName(), // firstname lastname
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'userType' => 'admin',
-            'password' => '$2y$10$RkLObft9ApeqWERk8mpZ8.Iegez6SHODM2dMfl217eqe0z3TQZF02', // hello
+            'userType' => $this->faker->randomElement($array = array ('admin','accessoriesSeller','electronicDeviceSeller', 'mobileSeller')),
+            'password' => '$2y$10$I8weDwTVZpsVakAvjeLDgeRqVhMod145Q84qFokZOKy1i/tjPkVcu', // password
             'remember_token' => Str::random(10),
         ];
     }

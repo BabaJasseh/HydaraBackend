@@ -16,6 +16,10 @@ class SaleFactory extends Factory
         return [
             'amountpaid' => $this->faker->numberBetween($min = 1000, $max = 9000),
             'sellingprice' => $this->faker->numberBetween($min = 1000, $max = 9000),
+//             'amountpaid' => $this->faker->numberBetween($min = 1000, $max = 9000) ,
+//             'totalSalePrice' => $this->faker->numberBetween($min = 1000, $max = 9000),
+//             // 'sellingprice' => $this->faker->numberBetween($min = 1000, $max = 9000),
+//              'balance' => $this->faker->numberBetween($min = 1000, $max = 9000),
             'seller' => $this->faker->name,
             'balance' => $this->faker->numberBetween($min = 1000, $max = 9000), //totalSalePrice
             'totalSalePrice' => $this->faker->numberBetween($min = 1000, $max = 9000),

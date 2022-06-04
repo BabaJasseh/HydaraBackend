@@ -48,13 +48,9 @@ class StaffController extends Controller
             $staff = Staff::paginate(20);
         }
 
-        if ($request->name) {
+        if ($request->firstname) {
             $order = $request->sort == '-id' ? 'DESC' : 'ASC';
-            $staff = Staff::where('name', 'LIKE', '%' . $request->name . '%')
-                ->with(
-                    'category',
-                    'brand',
-                )->orderBy('id', $order)->paginate(20);
+            $staff = Staff::where('firstname', 'LIKE', '%' . $request->firstname . '%')->orderBy('id', $order)->paginate(20);
         }
         $response = [
             'pagination' => [

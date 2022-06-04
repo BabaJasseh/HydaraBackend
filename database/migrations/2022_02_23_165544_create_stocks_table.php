@@ -16,11 +16,13 @@ class CreateStocksTable extends Migration
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('category_id');
             $table->integer('costprice');
             $table->integer('quantity');
             $table->integer('status'); // the status 0 means not available and 1 means available
             $table->timestamps();
+            $table->foreignId('category_id')->constrained('categories')->onUpdate('cascade')
+            ->onDelete('cascade');
+
         });
     }
 

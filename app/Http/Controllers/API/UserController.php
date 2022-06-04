@@ -35,6 +35,16 @@ class UserController extends Controller
         
     }
 
+    public function usersCount(){
+
+        // $simple_collection = collect([2,5,7,35,25,10]);
+        // $simple_collection->min()
+        return response()->json([
+            'status' => 422,
+            'userCount' => User::count(),
+        ]);
+    }
+
     public function edit($id){
         $user = User::find($id);
         if ($user) {

@@ -36,16 +36,38 @@ class TransactionController extends Controller
                  //////////////////////////////   add the deposit amount to the cashes.cashathand //////////////////
                 $previousCashAthand = DB::table('cashes')->first()->cashAthand;
                 DB::table('cashes')->update(['cashAthand' => $previousCashAthand + $request->amount]);
+
+                   ////////////////////////   this the logic to add the amount paid to the current balance //////////////////
+                    $previousCurrentBalance = DB::table('cashes')->first();
+                    if ($previousCurrentBalance == null) {
+                        $cash = new Cash();
+                        $cash->currentBalance = $request->amount;
+                        $cash->save();
+                    } else{
+                        $previousCurrentBalance = DB::table('cashes')->first()->currentBalance;
+                        DB::table('cashes')->update(['currentBalance' => $previousCurrentBalance + $request->amount]);
+                    }
+                    /////////////////////  the logic ends here  ////////////////////////
+
             } elseif($request->action == "withdraw"){
                 DB::table('depositors')->where('id', '=', $request->depositor_id)->update(['balance' => $previousBalance - $request->amount]);
                 //////////////////////////////   subtract the withdraw amount to the cashes.cashathand //////////////////
                 $previousCashAthand = DB::table('cashes')->first()->cashAthand;
                 DB::table('cashes')->update(['cashAthand' => $previousCashAthand - $request->amount]);
+
+                ////////////////////////   this the logic to add the amount paid to the current balance //////////////////
+                $previousCurrentBalance = DB::table('cashes')->first();
+                if ($previousCurrentBalance == null) {
+                    $cash = new Cash();
+                    $cash->currentBalance = $request->amount;
+                    $cash->save();
+                } else{
+                    $previousCurrentBalance = DB::table('cashes')->first()->currentBalance;
+                    DB::table('cashes')->update(['currentBalance' => $previousCurrentBalance - $request->amount]);
+                }
+                /////////////////////  the logic ends here  ////////////////////////
             }
            
-           
-
-
             return response()->json([
                 'status' => 200,
                 'message' => 'Transaction added successfully',

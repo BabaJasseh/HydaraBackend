@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Borrowertransaction;
 use Illuminate\Database\Seeder;
 
-class CreditorSeeder extends Seeder
+class BorrowerTransactionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -13,6 +14,6 @@ class CreditorSeeder extends Seeder
      */
     public function run()
     {
-        //
+        Borrowertransaction::factory()->count(10)->create();
     }
 }

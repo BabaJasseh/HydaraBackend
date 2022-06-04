@@ -50,6 +50,15 @@ class ProductController extends Controller
         }
     }
 
+    public function stockCount(){
+        $products = Product::all();
+        return response()->json([
+            'status' => 422,
+            'stockCount' => Product::count(),
+            'totalProductsAmount' => Product::sum('totalPrice'),
+        ]);
+    }
+
     public function index(Request $request)
     {
         // $product = Product::with('category', 'brand', 'stock')->get();
