@@ -11,31 +11,45 @@ use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
-    public function index(){
-        $user = User::all();
+    public function index(Request $req)
+    {
+        $limit = $req->limit;
+        $user = User::paginate($limit);
+        $response = [
+            'pagination' => [
+                'total' => $user->total(),
+                'per_page' => $user->perPage(),
+                'current_page' => $user->currentPage(),
+                'last_page' => $user->lastPage(),
+                'from' => $user->firstItem(),
+                'to' => $user->lastItem()
+            ],
+            'data' => $user
+        ];
         return response()->json([
             'status' => 200,
-            'result' => $user,           
+            'result' => $response,
         ]);
     }
 
-    public function usersBasedOnCategory($productId){
+    public function usersBasedOnCategory($productId)
+    {
         $category = Product::find($productId)->category()->first()->name;
         if ($category == 'Electronic Devices') {
             $user =  DB::table('users')->where('userType', '=', 'electronicDeviceSeller')->get();
-        } else if($category == 'Accessories'){
+        } else if ($category == 'Accessories') {
             $user =  DB::table('users')->where('userType', '=', 'accessoriesSeller')->get();
-        } else if($category == 'Mobiles'){
+        } else if ($category == 'Mobiles') {
             $user =  DB::table('users')->where('userType', '=', 'mobileSeller')->get();
         }
         return response()->json([
             'status' => 200,
             'user' => $user,
         ]);
-        
     }
 
-    public function usersCount(){
+    public function usersCount()
+    {
 
         // $simple_collection = collect([2,5,7,35,25,10]);
         // $simple_collection->min()
@@ -45,7 +59,8 @@ class UserController extends Controller
         ]);
     }
 
-    public function edit($id){
+    public function edit($id)
+    {
         $user = User::find($id);
         if ($user) {
             return response()->json([
@@ -60,9 +75,10 @@ class UserController extends Controller
         }
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $validator = Validator::make($request->all(), [
-            'category_id'=>'required|max:190',
+            'category_id' => 'required|max:190',
             'name' => 'required|max:191',
             'costprice' => 'required|max:191',
             'quantity' => 'required|max:190',
@@ -84,18 +100,17 @@ class UserController extends Controller
                     'status' => 200,
                     'message' => 'Student added successfully',
                 ]);
-            } else{ 
+            } else {
                 return response()->json([
                     'status' => 404,
                     'messages' => "user id not found",
                 ]);
             }
-           
         }
-       
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $user = User::find($id);
         if ($user) {
             $user->delete();
@@ -110,5 +125,4 @@ class UserController extends Controller
             ]);
         }
     }
-
 }

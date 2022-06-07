@@ -16,7 +16,8 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class SaleController extends Controller
 {
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             // 'name' => 'required|max:191',
         ]);
@@ -25,7 +26,7 @@ class SaleController extends Controller
                 'status' => 422,
                 'errors' => $validator->errors(),
             ]);
-        } else{
+        } else {
             $sale = new Sale();
             $sale->seller = JWTAuth::user()->firstname;  // it should be the authenticated user Auth::user
             $sale->customerName = $request->customerName;
@@ -35,14 +36,14 @@ class SaleController extends Controller
             $sale->date = Carbon::now()->toDateString();
             if ($request->totalSalePrice == $request->amountPaid) {
                 $sale->status = "complete";
-            }else{
+            } else {
                 $sale->status = "incomplete";
             }
             switch (JWTAuth::user()->userType) {
-                //////////  the case of admin will be remove it is just for testing case //////////
-                // case 'admin':
-                //     $sale->category_id = "1";
-                //     break;
+                    //////////  the case of admin will be remove it is just for testing case //////////
+                    // case 'admin':
+                    //     $sale->category_id = "1";
+                    //     break;
                 case 'mobileSeller':
                     $sale->category_id = "3";
                     break;
@@ -63,10 +64,10 @@ class SaleController extends Controller
             // \Log::info( $request->quantityArr);
 
             //// this first for loop is to check if their are enough quanity to make sales, if not then return from the functions
-            
+
             $count = $request->productsInSale;
-            for ($i=0; $i < count($count); $i++) { 
-                
+            for ($i = 0; $i < count($count); $i++) {
+
                 $testSellerStockProductQuantity =  DB::table('sellerinventories')->where('product_id', '=', $request->productsInSale[$i])->where('user_id', '=', JWTAuth::user()->id)->first();
                 // \Log::info( $testSellerStockProductQuantity == null);
                 if ($testSellerStockProductQuantity == null) {
@@ -77,14 +78,13 @@ class SaleController extends Controller
                     break;
                 }
                 $sellerStockProductQuantity =  DB::table('sellerinventories')->where('product_id', '=', $request->productsInSale[$i])->where('user_id', '=', JWTAuth::user()->id)->first()->sellerStockQuantity;
-                
-             
+
+
                 if ($sellerStockProductQuantity < $request->quantityArr[$i]) {
                     return response()->json([
                         'status' => 204,
                         'message' => 'insufficient products in seller stock',
                     ]);
-                
                 }
                 // the product quantity of the seller should reduced and not the main stock product quantity
                 //DB::table('products')->where('id', '=', $request->productsInSale[$i])->update(['totalQuantity' => $productQuantity - $request->quantityArr[$i]]); // this was the stopping point before 
@@ -97,14 +97,14 @@ class SaleController extends Controller
             $salesTotalCostprice = $sale->find($sale->id)->products->sum('costprice');
             $profit = $request->totalSalePrice - $salesTotalCostprice;
             DB::table('sales')->where('id', '=', $sale->id)->update(['profit' => $profit]);
-           
+
             ////////////////////////   this the logic to add the amount paid to the current balance//////////////////
             $previousCurrentBalance = DB::table('cashes')->first();
             if ($previousCurrentBalance == null) {
                 $cash = new Cash();
                 $cash->currentBalance = $request->amountPaid;
                 $cash->save();
-            } else{
+            } else {
                 $previousCurrentBalance = DB::table('cashes')->first()->currentBalance;
                 DB::table('cashes')->update(['currentBalance' => $previousCurrentBalance + $request->amountPaid]);
             }
@@ -123,12 +123,11 @@ class SaleController extends Controller
                 'sale_id' => $sale->id,
                 'message' => 'sale added successfully',
             ]);
-            
         }
-       
     }
-    
-    public function addPayment(Request $request, $saleId){
+
+    public function addPayment(Request $request, $saleId)
+    {
         $status =  DB::table('sales')->where('id', '=', $saleId)->first()->status;
         if ($status == 'complete') {
             return response()->json([
@@ -157,24 +156,25 @@ class SaleController extends Controller
         $payment->balance = $newBalance;
         $payment->amount = $request->amountToAdd;
         $payment->save();
-         ////////////////////////   this the logic to add the amount paid to the current balance //////////////////
-         $previousCurrentBalance = DB::table('cashes')->first();
-         if ($previousCurrentBalance == null) {
-             $cash = new Cash();
-             $cash->currentBalance = $request->amountToAdd;
-             $cash->save();
-         } else{
-             $previousCurrentBalance = DB::table('cashes')->first()->currentBalance;
-             DB::table('cashes')->update(['currentBalance' => $previousCurrentBalance + $request->amountToAdd]);
-         }
-         /////////////////////  the logic ends here  ////////////////////////
+        ////////////////////////   this the logic to add the amount paid to the current balance //////////////////
+        $previousCurrentBalance = DB::table('cashes')->first();
+        if ($previousCurrentBalance == null) {
+            $cash = new Cash();
+            $cash->currentBalance = $request->amountToAdd;
+            $cash->save();
+        } else {
+            $previousCurrentBalance = DB::table('cashes')->first()->currentBalance;
+            DB::table('cashes')->update(['currentBalance' => $previousCurrentBalance + $request->amountToAdd]);
+        }
+        /////////////////////  the logic ends here  ////////////////////////
         return response()->json([
             'status' => 200,
             'result' => $newTotalAmountPaid,
         ]);
     }
 
-    public function creditorsCount(){
+    public function creditorsCount()
+    {
         $creditors = Sale::where('status', '=', 'incomplete')->get();
         return response()->json([
             'status' => 422,
@@ -183,7 +183,8 @@ class SaleController extends Controller
         ]);
     }
 
-    public function currentBalanceAndExpenditures(){
+    public function currentBalanceAndExpenditures()
+    {
         return response()->json([
             'status' => 422,
             'currentBalance' => Cash::sum('currentBalance'),
@@ -191,33 +192,37 @@ class SaleController extends Controller
         ]);
     }
 
-    public function index(){
+    public function index()
+    {
 
-         $allsales = Sale::all(); 
+        $allsales = Sale::all();
         return response()->json([
             'status' => 200,
             'allsales' => $allsales->sum('amountpaid'),
             'totalGrandSales' => $allsales->sum('totalSalePrice'),
-            'totalAmountPaidToday' => Sale::where('date', '=', Carbon::now()->toDateString())->get()->sum('amountpaid'), 
+            'totalAmountPaidToday' => Sale::where('date', '=', Carbon::now()->toDateString())->get()->sum('amountpaid'),
             'salesToday' => Sale::with('products')->where('date', '=', Carbon::now()->toDateString())->get(),
             'totalProfit' => Sale::sum('profit'),
-            'totalAmountPaidToday' =>  Sale::where('date', '=', Carbon::now()->toDateString())->sum('amountPaid'),  
+            'totalAmountPaidToday' =>  Sale::where('date', '=', Carbon::now()->toDateString())->sum('amountPaid'),
             'todaysProfit' => Sale::where('date', '=', Carbon::now()->toDateString())->sum('profit'),
-            'noOfSaleToday' => Sale::where('date', '=', Carbon::now()->toDateString())->count(),        
+            'noOfSaleToday' => Sale::where('date', '=', Carbon::now()->toDateString())->count(),
         ]);
     }
-    public function creditorsDetailInfo(){
-        
+    public function creditorsDetailInfo()
+    {
+
         return response()->json([
             'status' => 200,
-            'totalAmountPaidToday' => Sale::where('date', '=', Carbon::now()->toDateString())->where('status', '=', 'incomplete')->get()->sum('amountpaid'), 
-            'noOfCreditorsToday' => Sale::where('date', '=', Carbon::now()->toDateString())->where('status', '=', 'incomplete')->count(),        
+            'totalAmountPaidToday' => Sale::where('date', '=', Carbon::now()->toDateString())->where('status', '=', 'incomplete')->get()->sum('amountpaid'),
+            'noOfCreditorsToday' => Sale::where('date', '=', Carbon::now()->toDateString())->where('status', '=', 'incomplete')->count(),
             'salesToday' => Sale::with('products')->where('date', '=', Carbon::now()->toDateString())->where('status', '=', 'incomplete')->get(),
-            'totalAmountPaidToday' =>  Sale::where('date', '=', Carbon::now()->toDateString())->where('status', '=', 'incomplete')->sum('amountPaid'),]);
+            'totalAmountPaidToday' =>  Sale::where('date', '=', Carbon::now()->toDateString())->where('status', '=', 'incomplete')->sum('amountPaid'),
+        ]);
     }
 
-    public function allSales(Request $request){
-           if ($request->sort == "-id") {
+    public function allSales(Request $request)
+    {
+        if ($request->sort == "-id") {
             $allsales = Sale::with('products', 'payments')->orderBy('id', 'desc')->paginate(20);
         } else {
             $allsales = Sale::with('products', 'payments')->paginate(20);
@@ -246,10 +251,11 @@ class SaleController extends Controller
             'status' => 200,
             'result' => $response,
         ]);
-   }
+    }
 
-   public function creditors(Request $request){
-    if ($request->sort == "-id") {
+    public function creditors(Request $request)
+    {
+        if ($request->sort == "-id") {
             $creditors = Sale::where('status', '=', 'incomplete')->with('products')->orderBy('id', 'desc')->paginate(20);
         } else {
             $creditors = Sale::where('status', '=', 'incomplete')->with('products')->paginate(20);
@@ -278,9 +284,10 @@ class SaleController extends Controller
             'status' => 200,
             'result' => $response,
         ]);
-        }
-    public function mobileSales(Request $request){
-            ///////////////////
+    }
+    public function mobileSales(Request $request)
+    {
+        ///////////////////
         if ($request->sort == "-id") {
             $mobileSales = Sale::where('category_id', '=', 3)->with('products', 'payments')->orderBy('id', 'desc')->paginate(20);
         } else {
@@ -312,8 +319,9 @@ class SaleController extends Controller
         ]);
     }
 
-    public function accessoriesSales(Request $request){
-     
+    public function accessoriesSales(Request $request)
+    {
+
         ///////////////////
         if ($request->sort == "-id") {
             $accessoriesSales = Sale::where('category_id', '=', 1)->with('products', 'payments')->orderBy('id', 'desc')->paginate(20);
@@ -346,8 +354,9 @@ class SaleController extends Controller
         ]);
     }
 
-    public function electronicsSales(Request $request){
-             ///////////////////
+    public function electronicsSales(Request $request)
+    {
+        ///////////////////
         if ($request->sort == "-id") {
             $electronicSales = Sale::where('category_id', '=', 2)->with('products', 'payments')->orderBy('id', 'desc')->paginate(20);
         } else {
@@ -379,10 +388,11 @@ class SaleController extends Controller
         ]);
     }
 
-    
 
-    public function productInSale(Request $request, $id){
-        
+
+    public function productInSale(Request $request, $id)
+    {
+
         if ($request->sort == "-id") {
             $sales = Sale::where('id', $id)->first()->products()->orderBy('id', 'desc')->paginate(20);
         } else {
@@ -414,22 +424,26 @@ class SaleController extends Controller
         ]);
     }
 
-    public function salesByCategory($categoryid){
+    public function salesByCategory($categoryid)
+    {
         return response()->json([
             'salesByCategory' => Sale::where('id', '=', $categoryid)->get(),
         ]);
     }
-    public function topMobileSales(){
+    public function topMobileSales()
+    {
         return response()->json([
             'topMobileSales' => Sale::where('category_id', '=', 3)->orderBy('totalSalePrice', 'desc')->take(5)->get(),
         ]);
     }
-    public function topElectronicSales(){
+    public function topElectronicSales()
+    {
         return response()->json([
             'topElectronicSales' => Sale::where('category_id', '=', 2)->orderBy('totalSalePrice', 'desc')->take(5)->get(),
         ]);
     }
-    public function topAccessoriesSales(){
+    public function topAccessoriesSales()
+    {
         return response()->json([
             'topAccessoriesSales' => Sale::where('category_id', '=', 1)->orderBy('totalSalePrice', 'desc')->take(5)->get(),
         ]);
@@ -437,7 +451,8 @@ class SaleController extends Controller
 
 
 
-    public function edit($id){
+    public function edit($id)
+    {
         $sale = Sale::find($id)->with('products')->get();
         if ($sale) {
             return response()->json([
@@ -452,7 +467,8 @@ class SaleController extends Controller
         }
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:191',
         ]);
@@ -470,18 +486,17 @@ class SaleController extends Controller
                     'status' => 200,
                     'message' => 'Sale updated successfully',
                 ]);
-            } else{ 
+            } else {
                 return response()->json([
                     'status' => 404,
                     'messages' => "sale id not found",
                 ]);
             }
-           
         }
-       
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $sale = Sale::find($id);
         if ($sale) {
             $sale->delete();
@@ -496,5 +511,4 @@ class SaleController extends Controller
             ]);
         }
     }
-
 }

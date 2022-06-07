@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\DB;
 
 class BorrowerController extends Controller
 {
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'firstname' => 'required|max:191',
             'lastname' => 'required|max:191',
@@ -24,7 +25,7 @@ class BorrowerController extends Controller
                 'status' => 422,
                 'errors' => $validator->errors(),
             ]);
-        } else{
+        } else {
             $borrower = new Borrower();
             $borrower->firstname = $request->firstname;
             $borrower->lastname = $request->lastname;
@@ -39,38 +40,41 @@ class BorrowerController extends Controller
                 'message' => 'Borrower added successfully',
             ]);
         }
-       
     }
 
-    public function payBorrowedAmount(Request $request, $id){
+    public function payBorrowedAmount(Request $request, $id)
+    {
         $amountToPay = $request->amountToPay;
         $amountBorrowed =  DB::table('borrowers')->where('id', '=', $id)->first()->amountBorrowed;
         DB::table('borrowers')->update(['amountBorrowed' => $amountBorrowed  - $amountToPay]);
-              //////////////////////////////   subtract the withdraw amount to the cashes.cashathand //////////////////
-              $previousCashAthand = DB::table('cashes')->first()->cashAthand;
-              DB::table('cashes')->update(['cashAthand' => $previousCashAthand + $request->amountBorrowed]);
-              ///////////////////////////////////////////
-             $amountBorrowed =  DB::table('borrowers')->where('id', '=', $id)->first()->amountBorrowed;
-             if ($amountBorrowed == 0) {
-                DB::table('borrowers')->where('id', '=', $id)->update(['paymentStatus' => 1]);
-             } else{
-                DB::table('borrowers')->where('id', '=', $id)->update(['paymentStatus' => 0]);
-             }
+        //////////////////////////////   subtract the withdraw amount to the cashes.cashathand //////////////////
+        $previousCashAthand = DB::table('cashes')->first()->cashAthand;
+        DB::table('cashes')->update(['cashAthand' => $previousCashAthand + $request->amountBorrowed]);
+        ///////////////////////////////////////////
+        $amountBorrowed =  DB::table('borrowers')->where('id', '=', $id)->first()->amountBorrowed;
+        if ($amountBorrowed == 0) {
+            DB::table('borrowers')->where('id', '=', $id)->update(['paymentStatus' => 1]);
+        } else {
+            DB::table('borrowers')->where('id', '=', $id)->update(['paymentStatus' => 0]);
+        }
     }
 
-    public function index(Request $request){
+    public function index(Request $request)
+    {
+        $limit = $request->limit;
         if ($request->sort == "-id") {
-            $borrower = Borrower::with('borrowertransactions')->orderBy('id', 'desc')->paginate(20);
+            $borrower = Borrower::with('borrowertransaction')->orderBy('id', 'desc')->paginate($limit);
         } else {
-            $borrower = Borrower::with('borrowertransactions')->paginate(20);
+            // return $request;
+            $borrower = Borrower::with('borrowertransaction')->paginate($limit);
         }
 
         if ($request->firstname) {
             $order = $request->sort == '-id' ? 'DESC' : 'ASC';
             $borrower = Borrower::where('firstname', 'LIKE', '%' . $request->firstname . '%')
                 ->with(
-                    'borrowertransactions',
-                )->orderBy('id', $order)->paginate(20);
+                    'borrowertransaction',
+                )->orderBy('id', $order)->paginate($limit);
         }
         $response = [
             'pagination' => [
@@ -90,14 +94,16 @@ class BorrowerController extends Controller
         ]);
     }
 
-    public function transactionsOfBorrower(Request $request, $id){
+    public function transactionsOfBorrower(Request $request, $id)
+    {
         // $borrower = Borrower::find($id);
-        $borrower = Borrower::where('id', $id)->firstOrFail()->borrowertransactions()->paginate(5);
-        
+        $limit = $request->limit;
+        $borrower = Borrower::where('id', $id)->firstOrFail()->borrowertransaction()->paginate(5);
+
         if ($request->sort == "-id") {
-            $borrower = Borrower::where('id', $id)->first()->borrowertransactions()->orderBy('id', 'desc')->paginate(20);
+            $borrower = Borrower::where('id', $id)->first()->borrowertransaction()->orderBy('id', 'desc')->paginate($limit);
         } else {
-            $borrower = Borrower::where('id', $id)->first()->borrowertransactions()->paginate(20);
+            $borrower = Borrower::where('id', $id)->first()->borrowertransaction()->paginate($limit);
         }
 
         if ($request->firstname) {
@@ -105,7 +111,7 @@ class BorrowerController extends Controller
             $borrower = Borrower::where('firstname', 'LIKE', '%' . $request->firstname . '%')
                 ->with(
                     'transactions',
-                )->orderBy('id', $order)->paginate(20);
+                )->orderBy('id', $order)->paginate($limit);
         }
         $response = [
             'pagination' => [
@@ -125,7 +131,8 @@ class BorrowerController extends Controller
         ]);
     }
 
-    public function edit($id){
+    public function edit($id)
+    {
         $borrower = Borrower::find($id);
         if ($borrower) {
             return response()->json([
@@ -140,7 +147,8 @@ class BorrowerController extends Controller
         }
     }
 
-    public function borrowersCount(){
+    public function borrowersCount()
+    {
         $borrower = Borrower::all();
         return response()->json([
             'status' => 422,
@@ -150,7 +158,8 @@ class BorrowerController extends Controller
     }
 
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $validator = Validator::make($request->all(), [
             'firstname' => 'required|max:191',
             'lastname' => 'required|max:191',
@@ -178,18 +187,17 @@ class BorrowerController extends Controller
                     'status' => 200,
                     'message' => 'Borrower added successfully',
                 ]);
-            } else{ 
+            } else {
                 return response()->json([
                     'status' => 404,
                     'messages' => "borrower id not found",
                 ]);
             }
-           
         }
-       
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $borrower = Borrower::find($id);
         if ($borrower) {
             $borrower->delete();
@@ -204,5 +212,4 @@ class BorrowerController extends Controller
             ]);
         }
     }
-
 }

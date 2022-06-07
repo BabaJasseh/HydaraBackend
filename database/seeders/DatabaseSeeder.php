@@ -15,36 +15,36 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         //  \App\Models\User::factory(10)->create();
-        $this->call(CategorySeeder::class);
-        $this->call(ProductSeeder::class);
         $this->call(BrandSeeder::class);
+        $this->call(CategorySeeder::class);
+        $this->call(SaleSeeder::class);
+        $this->call(ProductSeeder::class);
         $this->call(SalarySeeder::class);
         //  $this->call(ExpenditureSeeder::class);
         $this->call(StaffSeeder::class);
         $this->call(DepositorSeeder::class);
-        $this->call(SaleSeeder::class);
         $this->call(BorrowerSeeder::class);
         $this->call(UsertypeSeeder::class);
         $this->call(UserSeeder::class);
         $this->call(TransactionSeeder::class);
         $this->call(StockSeeder::class);
-// =======
-//          $this->call(CategorySeeder::class);
-//          $this->call(BrandSeeder::class);
-//          $this->call(ProductSeeder::class);
-//          $this->call(SalarySeeder::class);
-//          $this->call(ShopExpenditureSeeder::class);
-//          $this->call(CashExpenditureSeeder::class);
-//          $this->call(StaffSeeder::class);
-//          $this->call(DepositorSeeder::class);
-//          $this->call(SaleSeeder::class);
-//          $this->call(BorrowerSeeder::class);
-//          $this->call(UserTypeSeeder::class);
-//          $this->call(UserSeeder::class);
-//          $this->call(TransactionSeeder::class);
-//          $this->call(StockSeeder::class);
-//          $this->call(PaymentSeeder::class);
-//          $this->call(BorrowerTransactionSeeder::class);
-// >>>>>>> master
+        // =======
+        //          $this->call(CategorySeeder::class);
+        //          $this->call(BrandSeeder::class);
+        //          $this->call(ProductSeeder::class);
+        //          $this->call(SalarySeeder::class);
+        //          $this->call(ShopExpenditureSeeder::class);
+        //          $this->call(CashExpenditureSeeder::class);
+        //          $this->call(StaffSeeder::class);
+        //          $this->call(DepositorSeeder::class);
+        //          $this->call(SaleSeeder::class);
+        //          $this->call(BorrowerSeeder::class);
+        //          $this->call(UserTypeSeeder::class);
+        //          $this->call(UserSeeder::class);
+        //          $this->call(TransactionSeeder::class);
+        //          $this->call(StockSeeder::class);
+        //          $this->call(PaymentSeeder::class);
+        //          $this->call(BorrowerTransactionSeeder::class);
+        // >>>>>>> master
     }
 }

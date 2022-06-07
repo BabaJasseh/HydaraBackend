@@ -68,6 +68,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         ////////////////////////////////        Product      ///////////////////////////////
         Route::post('store-product', [ProductController::class, 'store']);
         Route::get('view-products', [ProductController::class, 'index']);
+        Route::get('view-assigned-products', [ProductController::class, 'assignedProducts']);
         Route::delete('delete-product/{id}', [ProductController::class, 'destroy']);
         Route::get('edit-product/{id}', [ProductController::class, 'edit']);
         Route::post('update-product/{id}', [ProductController::class, 'update']);
@@ -150,7 +151,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('top-five-accessories-sales', [SaleController::class, 'topAccessoriesSales']);
         Route::get('creditors-count', [SaleController::class, 'creditorsCount']);
         Route::get('current-blance-and-expenses', [SaleController::class, 'currentBalanceAndExpenditures']);
-        
+
 
         ////////////////////////////////        Creditors      ///////////////////////////////
         Route::post('store-creditor/{id}', [CreditorController::class, 'store']);
@@ -166,7 +167,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 
         ////////////////////////////////        Users      ///////////////////////////////
         Route::get('view-users', [UserController::class, 'index']);
-        Route::delete('delete-users/{id}', [UserController::class, 'destroy']);
+        Route::delete('delete-user/{id}', [UserController::class, 'destroy']);
         Route::get('edit-users/{id}', [UserController::class, 'edit']);
         Route::get('user-based-on-category/{id}', [UserController::class, 'usersBasedOnCategory']);
         Route::get('users-count', [UserController::class, 'usersCount']);

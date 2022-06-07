@@ -7,6 +7,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -50,7 +51,8 @@ class ProductController extends Controller
         }
     }
 
-    public function stockCount(){
+    public function stockCount()
+    {
         $products = Product::all();
         return response()->json([
             'status' => 422,
@@ -94,6 +96,18 @@ class ProductController extends Controller
         return response()->json([
             'status' => 200,
             'result' => $response,
+        ]);
+    }
+
+    public function assignedProducts()
+    {
+        $id = auth()->user()->id;
+        $user = User::find($id);
+        $products = $user->products;
+        // return $products;
+        return response()->json([
+            'status' => 200,
+            'result' => $products,
         ]);
     }
 

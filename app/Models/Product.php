@@ -37,4 +37,9 @@ class Product extends Model
     {
         return $this->belongsTo(Stock::class);
     }
+
+    public function seller()
+    {
+        return $this->belongsToMany(Stock::class, 'sellerinventories', 'product_id', 'user_id');
+    }
 }

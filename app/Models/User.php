@@ -26,5 +26,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
-  
+
+    public function products()
+    {
+        return $this->belongsToMany(Stock::class, 'sellerinventories', 'user_id', 'product_id');
+    }
 }

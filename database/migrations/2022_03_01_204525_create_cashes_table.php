@@ -15,12 +15,12 @@ class CreateCashesTable extends Migration
     {
         Schema::create('cashes', function (Blueprint $table) {
             $table->id();
-            $table->integer('totalCreditAmount');
-            $table->integer('totalDepositAmount');
-            $table->integer('totalBorrowedAmount');
-            $table->integer('totalExpense');
-            $table->integer('cashAthand');
-            $table->integer('currentBalance');
+            $table->integer('totalCreditAmount')->default(0);
+            $table->integer('totalDepositAmount')->default(0);
+            $table->integer('totalBorrowedAmount')->default(0);
+            $table->integer('totalExpense')->default(0);
+            $table->integer('cashAthand')->default(0);
+            $table->integer('currentBalance')->default(0);
             $table->timestamps();
         });
     }

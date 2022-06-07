@@ -10,7 +10,8 @@ class Borrower extends Model
 {
     use HasFactory;
 
-    public function borrowertransactions(){
+    public function borrowertransaction()
+    {
         return $this->hasMany(BorrowerTransaction::class);
     }
 }
