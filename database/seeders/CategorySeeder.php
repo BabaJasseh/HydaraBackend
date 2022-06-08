@@ -14,6 +14,17 @@ class CategorySeeder extends Seeder
      */
     public function run()
     {
-        Category::factory()->count(3)->create();
+        Category::create([
+            'name' => 'Mobiles',
+            'date' => '2022-06-08'
+        ]);
+        Category::create([
+            'name' => 'Accessories',
+            'date' => '2022-06-08'
+        ]);
+        Category::create([
+            'name' => 'Electronic Devices',
+            'date' => '2022-06-08'
+        ]);
     }
 }

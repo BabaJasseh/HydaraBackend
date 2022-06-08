@@ -14,6 +14,18 @@ class UserTypeSeeder extends Seeder
      */
     public function run()
     {
-        Usertype::factory()->count(4)->create();
+        // Usertype::factory()->count(4)->create();
+        Usertype::create([
+            'name' => 'admin'
+        ]);
+        Usertype::create([
+            'name' => 'mobileSeller'
+        ]);
+        Usertype::create([
+            'name' => 'electronicDeviceSeller'
+        ]);
+        Usertype::create([
+            'name' => 'accessoriesSeller'
+        ]);
     }
 }
