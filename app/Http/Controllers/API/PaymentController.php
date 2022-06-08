@@ -21,14 +21,14 @@ class PaymentController extends Controller
     //     } else{
     //         $payment = new Payment();
     //         $payment->name = $request->name;
-    
+
     //         $payment->save();
     //         return response()->json([
     //             'status' => 200,
     //             'message' => 'Payment added successfully',
     //         ]);
     //     }
-       
+
     // }
 
     public function index(Request $request, $saleId)
@@ -36,9 +36,9 @@ class PaymentController extends Controller
         // $product = Product::with('category', 'payment', 'stock')->get();
         // return $request;
         if ($request->sort == "-id") {
-            $payment = Payment::where('sale_id','=', $saleId)->orderBy('id', 'desc')->paginate(20);
+            $payment = Payment::where('sale_id', '=', $saleId)->orderBy('id', 'desc')->paginate(20);
         } else {
-            $payment = Payment::where('sale_id', '=' ,$saleId)->paginate(20);
+            $payment = Payment::where('sale_id', '=', $saleId)->paginate(20);
         }
 
         if ($request->name) {
@@ -67,7 +67,8 @@ class PaymentController extends Controller
     }
 
 
-    public function edit($id){
+    public function edit($id)
+    {
         $payment = Payment::find($id);
         if ($payment) {
             return response()->json([
@@ -82,7 +83,8 @@ class PaymentController extends Controller
         }
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:191',
         ]);
@@ -101,18 +103,17 @@ class PaymentController extends Controller
                     'message' => 'Payment
                      added successfully',
                 ]);
-            } else{ 
+            } else {
                 return response()->json([
                     'status' => 404,
                     'messages' => "payment id not found",
                 ]);
             }
-           
         }
-       
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $payment = Payment::find($id);
         if ($payment) {
             $payment->delete();
@@ -127,5 +128,4 @@ class PaymentController extends Controller
             ]);
         }
     }
-
 }

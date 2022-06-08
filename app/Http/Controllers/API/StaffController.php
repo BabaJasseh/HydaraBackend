@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Validator;
 
 class StaffController extends Controller
 {
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'firstname' => 'required|max:191',
             'lastname' => 'required|max:191',
@@ -22,7 +23,7 @@ class StaffController extends Controller
                 'status' => 422,
                 'errors' => $validator->errors(),
             ]);
-        } else{
+        } else {
             $staff = new Staff();
             $staff->firstname = $request->firstname;
             $staff->lastname = $request->lastname;
@@ -35,7 +36,6 @@ class StaffController extends Controller
                 'message' => 'staff added successfully',
             ]);
         }
-       
     }
 
     public function index(Request $request)
@@ -71,7 +71,8 @@ class StaffController extends Controller
     }
 
 
-    public function edit($id){
+    public function edit($id)
+    {
         $staff = Staff::find($id);
         if ($staff) {
             return response()->json([
@@ -86,7 +87,8 @@ class StaffController extends Controller
         }
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $validator = Validator::make($request->all(), [
             'firstname' => 'required|max:191',
             'lastname' => 'required|max:191',
@@ -112,18 +114,17 @@ class StaffController extends Controller
                     'status' => 200,
                     'message' => 'Staff added successfully',
                 ]);
-            } else{ 
+            } else {
                 return response()->json([
                     'status' => 404,
                     'messages' => "staff id not found",
                 ]);
             }
-           
         }
-       
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $staff = Staff::find($id);
         if ($staff) {
             $staff->delete();
@@ -138,5 +139,4 @@ class StaffController extends Controller
             ]);
         }
     }
-
 }

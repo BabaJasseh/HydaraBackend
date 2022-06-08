@@ -11,28 +11,30 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class SellerInventoryController extends Controller
 {
-    
-    public function store(Request $request, $productId){
+
+    public function store(Request $request, $productId)
+    {
         /// note that if the seller is not in the inventory create a new seller inventory
         /// otherwise update the seller inventory
         /// make the update based on the user_id and that is the seller
         //// username should be user_id
-            $sellerInventory = new Sellerinventory();
-            $sellerInventory->user_id = $request->user_id;
-            $sellerInventory->product_id = $productId;
-            $sellerInventory->sellerStockQuantity = $request->quantityToAdd;
-            $sellerName =  DB::table('users')->where('id', '=', $sellerInventory->user_id)->first()->firstname;
-            $sellerInventory->sellername = $sellerName;
-            $mainStockQuantity =  DB::table('products')->where('id', '=', $productId)->first()->totalQuantity;
-            DB::table('products')->where('id', '=', $productId)->update(['totalQuantity' => $mainStockQuantity -  $request->quantityToAdd]);
-            $sellerInventory->save();
-            return response()->json([
-                'status' => 200,
-                'result' => "product Seller successfuly",
-            ]);   
+        $sellerInventory = new Sellerinventory();
+        $sellerInventory->user_id = $request->user_id;
+        $sellerInventory->product_id = $productId;
+        $sellerInventory->sellerStockQuantity = $request->quantityToAdd;
+        $sellerName =  DB::table('users')->where('id', '=', $sellerInventory->user_id)->first()->firstname;
+        $sellerInventory->sellername = $sellerName;
+        $mainStockQuantity =  DB::table('products')->where('id', '=', $productId)->first()->totalQuantity;
+        DB::table('products')->where('id', '=', $productId)->update(['totalQuantity' => $mainStockQuantity -  $request->quantityToAdd]);
+        $sellerInventory->save();
+        return response()->json([
+            'status' => 200,
+            'result' => "product Seller successfuly",
+        ]);
     }
 
-    public function updateSellerStockQuantity(Request $request, $productId){
+    public function updateSellerStockQuantity(Request $request, $productId)
+    {
         $sellerStockQuantity =  DB::table('sellerinventories')->where('user_id', '=', $request->user_id)->first()->sellerStockQuantity;
         $mainStockQuantity =  DB::table('products')->where('id', '=', $productId)->first()->totalQuantity;
         if ($request->quantityToAddOrRemove > $mainStockQuantity) {
@@ -54,9 +56,9 @@ class SellerInventoryController extends Controller
         // $product = Product::with('category', 'Sellerinventory', 'stock')->get();
         // return $request;
         if ($request->sort == "-id") {
-            $Sellerinventory = Sellerinventory::where('product_id','=', $productId)->orderBy('id', 'desc')->paginate(20);
+            $Sellerinventory = Sellerinventory::where('product_id', '=', $productId)->orderBy('id', 'desc')->paginate(20);
         } else {
-            $Sellerinventory = Sellerinventory::where('product_id', '=' ,$productId)->paginate(20);
+            $Sellerinventory = Sellerinventory::where('product_id', '=', $productId)->paginate(20);
         }
 
         if ($request->sellername) {
@@ -85,7 +87,8 @@ class SellerInventoryController extends Controller
     }
 
 
-    public function edit($id){
+    public function edit($id)
+    {
         $Sellerinventory = Sellerinventory::find($id);
         if ($Sellerinventory) {
             return response()->json([
@@ -100,7 +103,8 @@ class SellerInventoryController extends Controller
         }
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:191',
         ]);
@@ -119,18 +123,17 @@ class SellerInventoryController extends Controller
                     'message' => 'Sellerinventory
                      added successfully',
                 ]);
-            } else{ 
+            } else {
                 return response()->json([
                     'status' => 404,
                     'messages' => "Sellerinventory id not found",
                 ]);
             }
-           
         }
-       
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $Sellerinventory = Sellerinventory::find($id);
         if ($Sellerinventory) {
             $Sellerinventory->delete();
@@ -145,5 +148,4 @@ class SellerInventoryController extends Controller
             ]);
         }
     }
-
 }

@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Validator;
 
 class CashController extends Controller
 {
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             // 'name' => 'required|max:191',
         ]);
@@ -20,11 +21,11 @@ class CashController extends Controller
                 'status' => 422,
                 'errors' => $validator->errors(),
             ]);
-        } else{
+        } else {
             $sale = new Sale();
 
-            $price = Product::where('id', '=', $request->product_id )->first()['price'];
-     
+            $price = Product::where('id', '=', $request->product_id)->first()['price'];
+
             $sale->seller = $request->seller;  // it should be the authenticated user Auth::user
             $sale->customerName = $request->customerName;
             $sale->product_id = $request->product_id;
@@ -32,41 +33,43 @@ class CashController extends Controller
             $sale->amountPaid = $request->amountPaid;
             $sale->profit = $request->sellingprice - $price;
             $sale->date = Carbon::now()->toDateString();
-            
-            
+
+
 
             /// the total price will be calculated by the system, and the amount paid will be added by the user
-    
+
             $sale->save();
             return response()->json([
                 'status' => 200,
                 'message' => 'Sale added successfully',
             ]);
         }
-       
     }
 
-    public function index(){
+    public function index()
+    {
 
-         $allsales = Sale::all(); 
+        $allsales = Sale::all();
         return response()->json([
             'status' => 200,
-             'allsales' => $allsales->sum('amountpaid'),
+            'allsales' => $allsales->sum('amountpaid'),
             'salesToday' => Sale::where('date', '=', Carbon::now()->toDateString())->get(),
             'totalProfit' => Sale::sum('profit'),
-            'totalAmountPaidToday' =>  Sale::where('date', '=', Carbon::now()->toDateString())->sum('amountPaid'),  
+            'totalAmountPaidToday' =>  Sale::where('date', '=', Carbon::now()->toDateString())->sum('amountPaid'),
             'todaysProfit' => Sale::where('date', '=', Carbon::now()->toDateString())->sum('profit'),
-            'noOfSaleToday' => Sale::where('date', '=', Carbon::now()->toDateString())->count(),        
+            'noOfSaleToday' => Sale::where('date', '=', Carbon::now()->toDateString())->count(),
         ]);
     }
 
-    public function productInSale($saleId){
+    public function productInSale($saleId)
+    {
         return response()->json([
             'sales  ' => Sale::find($saleId)->with('products')->get(),
         ]);
     }
 
-    public function edit($id){
+    public function edit($id)
+    {
         $sale = Sale::find($id);
         if ($sale) {
             return response()->json([
@@ -81,7 +84,8 @@ class CashController extends Controller
         }
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:191',
         ]);
@@ -99,18 +103,17 @@ class CashController extends Controller
                     'status' => 200,
                     'message' => 'Student added successfully',
                 ]);
-            } else{ 
+            } else {
                 return response()->json([
                     'status' => 404,
                     'messages' => "sale id not found",
                 ]);
             }
-           
         }
-       
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $sale = Sale::find($id);
         if ($sale) {
             $sale->delete();
@@ -125,5 +128,4 @@ class CashController extends Controller
             ]);
         }
     }
-
 }

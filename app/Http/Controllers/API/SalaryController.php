@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\DB;
 class SalaryController extends Controller
 {
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'staffname' => 'required|max:191',
             'month' => 'required|max:191',
@@ -23,7 +24,7 @@ class SalaryController extends Controller
                 'status' => 422,
                 'errors' => $validator->errors(),
             ]);
-        } else{
+        } else {
             $salary = new Salary();
             $salary->staffname = $request->staffname;
             $salary->month = $request->month;
@@ -31,18 +32,17 @@ class SalaryController extends Controller
             $salary->date = $request->date;
             $salary->save();
 
-             //////////////////////////////   subtract the withdraw amount to the cashes.cashathand //////////////////
-             $previousCashAthand = DB::table('cashes')->first()->cashAthand;
-             DB::table('cashes')->update(['cashAthand' => $previousCashAthand - $request->sellingprice - $request->amount]);
-             /////////////////////
-             
-            
+            //////////////////////////////   subtract the withdraw amount to the cashes.cashathand //////////////////
+            $previousCashAthand = DB::table('cashes')->first()->cashAthand;
+            DB::table('cashes')->update(['cashAthand' => $previousCashAthand - $request->sellingprice - $request->amount]);
+            /////////////////////
+
+
             return response()->json([
                 'status' => 200,
                 'message' => 'Salary added successfully',
             ]);
         }
-       
     }
 
     public function index(Request $request)
@@ -78,7 +78,8 @@ class SalaryController extends Controller
         ]);
     }
 
-    public function edit($id){
+    public function edit($id)
+    {
         $salary = Salary::find($id);
         if ($salary) {
             return response()->json([
@@ -93,9 +94,10 @@ class SalaryController extends Controller
         }
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $validator = Validator::make($request->all(), [
-            'category_id'=>'required|max:190',
+            'category_id' => 'required|max:190',
             'name' => 'required|max:191',
             'brand_id' => 'required|max:191',
             'description' => 'required|max:190',
@@ -118,18 +120,17 @@ class SalaryController extends Controller
                     'status' => 200,
                     'message' => 'Salary added successfully',
                 ]);
-            } else{ 
+            } else {
                 return response()->json([
                     'status' => 404,
                     'messages' => "salary id not found",
                 ]);
             }
-           
         }
-       
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $salary = Salary::find($id);
         if ($salary) {
             $salary->delete();
@@ -144,5 +145,4 @@ class SalaryController extends Controller
             ]);
         }
     }
-
 }

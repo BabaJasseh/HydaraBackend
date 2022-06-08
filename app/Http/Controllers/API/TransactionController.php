@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
+use App\Models\Cash;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 
 class TransactionController extends Controller
 {
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             // 'category_id'=>'required|max:190',
             // 'name' => 'required|max:191',
@@ -23,7 +25,7 @@ class TransactionController extends Controller
                 'status' => 422,
                 'errors' => $validator->errors(),
             ]);
-        } else{
+        } else {
             $transaction = new Transaction();
             $transaction->depositor_id = $request->depositor_id;
             $transaction->description = $request->description;
@@ -33,23 +35,23 @@ class TransactionController extends Controller
             $previousBalance = DB::table('depositors')->where('id', '=', $request->depositor_id)->first()->balance;
             if ($request->action == "deposit") {
                 DB::table('depositors')->where('id', '=', $request->depositor_id)->update(['balance' => $previousBalance + $request->amount]);
-                 //////////////////////////////   add the deposit amount to the cashes.cashathand //////////////////
+                //////////////////////////////   add the deposit amount to the cashes.cashathand //////////////////
                 $previousCashAthand = DB::table('cashes')->first()->cashAthand;
                 DB::table('cashes')->update(['cashAthand' => $previousCashAthand + $request->amount]);
 
-                   ////////////////////////   this the logic to add the amount paid to the current balance //////////////////
-                    $previousCurrentBalance = DB::table('cashes')->first();
-                    if ($previousCurrentBalance == null) {
-                        $cash = new Cash();
-                        $cash->currentBalance = $request->amount;
-                        $cash->save();
-                    } else{
-                        $previousCurrentBalance = DB::table('cashes')->first()->currentBalance;
-                        DB::table('cashes')->update(['currentBalance' => $previousCurrentBalance + $request->amount]);
-                    }
-                    /////////////////////  the logic ends here  ////////////////////////
+                ////////////////////////   this the logic to add the amount paid to the current balance //////////////////
+                $previousCurrentBalance = DB::table('cashes')->first();
+                if ($previousCurrentBalance == null) {
+                    $cash = new Cash();
+                    $cash->currentBalance = $request->amount;
+                    $cash->save();
+                } else {
+                    $previousCurrentBalance = DB::table('cashes')->first()->currentBalance;
+                    DB::table('cashes')->update(['currentBalance' => $previousCurrentBalance + $request->amount]);
+                }
+                /////////////////////  the logic ends here  ////////////////////////
 
-            } elseif($request->action == "withdraw"){
+            } elseif ($request->action == "withdraw") {
                 DB::table('depositors')->where('id', '=', $request->depositor_id)->update(['balance' => $previousBalance - $request->amount]);
                 //////////////////////////////   subtract the withdraw amount to the cashes.cashathand //////////////////
                 $previousCashAthand = DB::table('cashes')->first()->cashAthand;
@@ -61,19 +63,18 @@ class TransactionController extends Controller
                     $cash = new Cash();
                     $cash->currentBalance = $request->amount;
                     $cash->save();
-                } else{
+                } else {
                     $previousCurrentBalance = DB::table('cashes')->first()->currentBalance;
                     DB::table('cashes')->update(['currentBalance' => $previousCurrentBalance - $request->amount]);
                 }
                 /////////////////////  the logic ends here  ////////////////////////
             }
-           
+
             return response()->json([
                 'status' => 200,
                 'message' => 'Transaction added successfully',
             ]);
         }
-       
     }
 
     public function index(Request $request)
@@ -111,7 +112,8 @@ class TransactionController extends Controller
         ]);
     }
 
-    public function edit($id){
+    public function edit($id)
+    {
         $transaction = Transaction::find($id);
         if ($transaction) {
             return response()->json([
@@ -126,9 +128,10 @@ class TransactionController extends Controller
         }
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $validator = Validator::make($request->all(), [
-            'category_id'=>'required|max:190',
+            'category_id' => 'required|max:190',
             'name' => 'required|max:191',
             'brand_id' => 'required|max:191',
             'description' => 'required|max:190',
@@ -152,18 +155,17 @@ class TransactionController extends Controller
                     'status' => 200,
                     'message' => 'Student added successfully',
                 ]);
-            } else{ 
+            } else {
                 return response()->json([
                     'status' => 404,
                     'messages' => "transaction id not found",
                 ]);
             }
-           
         }
-       
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $transaction = Transaction::find($id);
         if ($transaction) {
             $transaction->delete();
@@ -178,5 +180,4 @@ class TransactionController extends Controller
             ]);
         }
     }
-
 }

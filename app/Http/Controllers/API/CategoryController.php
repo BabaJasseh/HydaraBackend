@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:191',
         ]);
@@ -19,32 +20,33 @@ class CategoryController extends Controller
                 'status' => 422,
                 'errors' => $validator->errors(),
             ]);
-        } else{
+        } else {
             $category = new Category();
             $category->name = $request->name;
             $category->date = Carbon::now()->toDateString();
-    
+
             $category->save();
             return response()->json([
                 'status' => 200,
                 'message' => 'Category added successfully',
             ]);
         }
-       
     }
 
-    public function index(Request $request){
+    public function index(Request $request)
+    {
         $category = Category::paginate();
         if ($request->keyword) {
-            $category = Category::where('name', 'LIKE', '%' .$request->keyword. '%')->get();
+            $category = Category::where('name', 'LIKE', '%' . $request->keyword . '%')->get();
         }
         return response()->json([
             'status' => 200,
-            'result' => $category,   
+            'result' => $category,
         ]);
     }
 
-    public function productInCategory($categoryId){
+    public function productInCategory($categoryId)
+    {
         $sale = Category::find($categoryId)->with('products')->get();
         if ($sale) {
             return response()->json([
@@ -53,7 +55,8 @@ class CategoryController extends Controller
             ]);
         }
     }
-    public function edit($id){
+    public function edit($id)
+    {
         $category = Category::find($id);
         if ($category) {
             return response()->json([
@@ -68,7 +71,8 @@ class CategoryController extends Controller
         }
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:191',
         ]);
@@ -86,18 +90,17 @@ class CategoryController extends Controller
                     'status' => 200,
                     'message' => 'Student added successfully',
                 ]);
-            } else{ 
+            } else {
                 return response()->json([
                     'status' => 404,
                     'messages' => "category id not found",
                 ]);
             }
-           
         }
-       
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $category = Category::find($id);
         if ($category) {
             $category->delete();
@@ -112,5 +115,4 @@ class CategoryController extends Controller
             ]);
         }
     }
-
 }

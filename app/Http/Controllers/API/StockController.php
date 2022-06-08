@@ -9,9 +9,10 @@ use Illuminate\Support\Facades\Validator;
 
 class StockController extends Controller
 {
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $validator = Validator::make($request->all(), [
-            'category_id'=>'required|max:190',
+            'category_id' => 'required|max:190',
             'name' => 'required|max:191',
             'costprice' => 'required|max:191',
             'quantity' => 'required|max:190',
@@ -21,7 +22,7 @@ class StockController extends Controller
                 'status' => 422,
                 'errors' => $validator->errors(),
             ]);
-        } else{
+        } else {
             $stock = new Stock();
             $stock->name = $request->name;
             $stock->category_id = $request->category_id;
@@ -33,18 +34,19 @@ class StockController extends Controller
                 'message' => 'Student added successfully',
             ]);
         }
-       
     }
 
-    public function index(){
+    public function index()
+    {
         $stock = Stock::all();
         return response()->json([
             'status' => 200,
-            'result' => $stock,           
+            'result' => $stock,
         ]);
     }
 
-    public function edit($id){
+    public function edit($id)
+    {
         $stock = Stock::find($id);
         if ($stock) {
             return response()->json([
@@ -59,9 +61,10 @@ class StockController extends Controller
         }
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $validator = Validator::make($request->all(), [
-            'category_id'=>'required|max:190',
+            'category_id' => 'required|max:190',
             'name' => 'required|max:191',
             'costprice' => 'required|max:191',
             'quantity' => 'required|max:190',
@@ -83,18 +86,17 @@ class StockController extends Controller
                     'status' => 200,
                     'message' => 'Student added successfully',
                 ]);
-            } else{ 
+            } else {
                 return response()->json([
                     'status' => 404,
                     'messages' => "stock id not found",
                 ]);
             }
-           
         }
-       
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $stock = Stock::find($id);
         if ($stock) {
             $stock->delete();
@@ -109,5 +111,4 @@ class StockController extends Controller
             ]);
         }
     }
-
 }

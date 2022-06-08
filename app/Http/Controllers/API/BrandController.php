@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Validator;
 
 class BrandController extends Controller
 {
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:191',
         ]);
@@ -18,17 +19,16 @@ class BrandController extends Controller
                 'status' => 422,
                 'errors' => $validator->errors(),
             ]);
-        } else{
+        } else {
             $brand = new Brand();
             $brand->name = $request->name;
-    
+
             $brand->save();
             return response()->json([
                 'status' => 200,
                 'message' => 'Brand added successfully',
             ]);
         }
-       
     }
 
     public function index(Request $request)
@@ -67,7 +67,8 @@ class BrandController extends Controller
     }
 
 
-    public function edit($id){
+    public function edit($id)
+    {
         $brand = Brand::find($id);
         if ($brand) {
             return response()->json([
@@ -82,7 +83,8 @@ class BrandController extends Controller
         }
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:191',
         ]);
@@ -101,18 +103,17 @@ class BrandController extends Controller
                     'message' => 'Brand
                      added successfully',
                 ]);
-            } else{ 
+            } else {
                 return response()->json([
                     'status' => 404,
                     'messages' => "brand id not found",
                 ]);
             }
-           
         }
-       
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $brand = Brand::find($id);
         if ($brand) {
             $brand->delete();
@@ -127,5 +128,4 @@ class BrandController extends Controller
             ]);
         }
     }
-
 }
