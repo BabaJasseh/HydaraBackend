@@ -59,7 +59,9 @@ Route::group([
 // JWTAuth::user()->userType;
 // $this->middleware(['auth:api', 'seller'], ['except' => ['login', 'register']]);
 
-
+Route::get('test', function (Request $req) {
+    return $req;
+});
 
 
 Route::group(['middleware' => 'auth:api'], function () {
