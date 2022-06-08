@@ -170,7 +170,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         ////////////////////////////////        Users      ///////////////////////////////
         Route::get('view-users', [UserController::class, 'index']);
         Route::delete('delete-user/{id}', [UserController::class, 'destroy']);
-        Route::get('edit-users/{id}', [UserController::class, 'edit']);
+        Route::post('update-user/{id}', [UserController::class, 'update']);
         Route::get('user-based-on-category/{id}', [UserController::class, 'usersBasedOnCategory']);
         Route::get('users-count', [UserController::class, 'usersCount']);
 

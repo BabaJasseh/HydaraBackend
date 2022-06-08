@@ -78,10 +78,10 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'category_id' => 'required|max:190',
-            'name' => 'required|max:191',
-            'costprice' => 'required|max:191',
-            'quantity' => 'required|max:190',
+            // 'category_id' => 'required|max:190',
+            // 'name' => 'required|max:191',
+            // 'costprice' => 'required|max:191',
+            // 'quantity' => 'required|max:190',
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -91,14 +91,20 @@ class UserController extends Controller
         } else {
             $user = User::find($id);
             if ($user) {
-                $user->name = $request->name;
-                $user->category_id = $request->category_id;
-                $user->costprice = $request->brand_id;
-                $user->quantity = $request->quantity;
+                $user->firstname = $request->firstname;
+                $user->lastname = $request->lastname;
+                $user->email = $request->email;
+                if (empty($request->password)) {
+                    $user->password = $user->password;
+                } else {
+
+                    $user->password = bcrypt($request->password);
+                }
+                $user->userType = $request->userType;
                 $user->save();
                 return response()->json([
                     'status' => 200,
-                    'message' => 'Student added successfully',
+                    'message' => 'user updated successfully',
                 ]);
             } else {
                 return response()->json([
