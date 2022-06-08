@@ -31,7 +31,7 @@ class SaleController extends Controller
             $sale->seller = JWTAuth::user()->firstname;  // it should be the authenticated user Auth::user
             $sale->customerName = $request->customerName;
             $sale->totalSalePrice = $request->totalSalePrice;
-            $sale->amountPaid = $request->amountPaid;
+            $sale->amountpaid = $request->amountPaid;
             $sale->balance = $request->totalSalePrice - $request->amountPaid;
             $sale->date = Carbon::now()->toDateString();
             if ($request->totalSalePrice == $request->amountPaid) {
@@ -203,7 +203,7 @@ class SaleController extends Controller
             'totalAmountPaidToday' => Sale::where('date', '=', Carbon::now()->toDateString())->get()->sum('amountpaid'),
             'salesToday' => Sale::with('products')->where('date', '=', Carbon::now()->toDateString())->get(),
             'totalProfit' => Sale::sum('profit'),
-            'totalAmountPaidToday' =>  Sale::where('date', '=', Carbon::now()->toDateString())->sum('amountPaid'),
+            'totalAmountPaidToday' =>  Sale::where('date', '=', Carbon::now()->toDateString())->sum('amountpaid'),
             'todaysProfit' => Sale::where('date', '=', Carbon::now()->toDateString())->sum('profit'),
             'noOfSaleToday' => Sale::where('date', '=', Carbon::now()->toDateString())->count(),
         ]);
