@@ -216,7 +216,7 @@ class SaleController extends Controller
             'totalAmountPaidToday' => Sale::where('date', '=', Carbon::now()->toDateString())->where('status', '=', 'incomplete')->get()->sum('amountpaid'),
             'noOfCreditorsToday' => Sale::where('date', '=', Carbon::now()->toDateString())->where('status', '=', 'incomplete')->count(),
             'salesToday' => Sale::with('products')->where('date', '=', Carbon::now()->toDateString())->where('status', '=', 'incomplete')->get(),
-            'totalAmountPaidToday' =>  Sale::where('date', '=', Carbon::now()->toDateString())->where('status', '=', 'incomplete')->sum('amountPaid'),
+            'totalAmountPaidToday' =>  Sale::where('date', '=', Carbon::now()->toDateString())->where('status', '=', 'incomplete')->sum('amountpaid'),
         ]);
     }
 
