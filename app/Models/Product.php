@@ -40,6 +40,6 @@ class Product extends Model
 
     public function seller()
     {
-        return $this->belongsToMany(Stock::class, 'sellerinventories', 'product_id', 'user_id');
+        return $this->belongsToMany(User::class, 'sellerinventories', 'product_id', 'user_id');
     }
 }

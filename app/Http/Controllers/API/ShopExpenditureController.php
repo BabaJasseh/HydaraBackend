@@ -2,45 +2,47 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
-use App\Models\Shopexpenditure;
+use App\Models\Cash;
 use Illuminate\Http\Request;
+use App\Models\Shopexpenditure;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 
 
 class ShopExpenditureController extends Controller
 {
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $shopExpenditure = new Shopexpenditure();
         $shopExpenditure->categoryName = $request->categoryName;
         $shopExpenditure->address = $request->address;
         $shopExpenditure->description = $request->description;
         $shopExpenditure->initialExpense = $request->initialExpense;
         $shopExpenditure->save();
-       ////////////////////////   this the logic to add the amount  to the total expenditures //////////////////
-       $previousTotalExpense = DB::table('cashes')->first();
-       if ($previousTotalExpense == null) {
-           $cash = new Cash();
-           $cash->totalExpense = $request->initialExpense;
-           $cash->save();
-       } else{
-           $previousTotalExpense = DB::table('cashes')->first()->totalExpense;
-           DB::table('cashes')->update(['totalExpense' => $previousTotalExpense + $request->initialExpense]);
-       }
-       /////////////////////  the logic for expenditures ends here  ////////////////////////
+        ////////////////////////   this the logic to add the amount  to the total expenditures //////////////////
+        $previousTotalExpense = DB::table('cashes')->first();
+        if ($previousTotalExpense == null) {
+            $cash = new Cash();
+            $cash->totalExpense = $request->initialExpense;
+            $cash->save();
+        } else {
+            $previousTotalExpense = DB::table('cashes')->first()->totalExpense;
+            DB::table('cashes')->update(['totalExpense' => $previousTotalExpense + $request->initialExpense]);
+        }
+        /////////////////////  the logic for expenditures ends here  ////////////////////////
 
-       ////////////////////////   this the logic to add the amount paid to the current balance //////////////////
-       $previousCurrentBalance = DB::table('cashes')->first();
-       if ($previousCurrentBalance == null) {
-           $cash = new Cash();
-           $cash->currentBalance = $request->initialExpense;
-           $cash->save();
-       } else{
-           $previousCurrentBalance = DB::table('cashes')->first()->currentBalance;
-           DB::table('cashes')->update(['currentBalance' => $previousCurrentBalance - $request->initialExpense]);
-       }
-       /////////////////////  the logic ends here  ////////////////////////
-         
+        ////////////////////////   this the logic to add the amount paid to the current balance //////////////////
+        $previousCurrentBalance = DB::table('cashes')->first();
+        if ($previousCurrentBalance == null) {
+            $cash = new Cash();
+            $cash->currentBalance = $request->initialExpense;
+            $cash->save();
+        } else {
+            $previousCurrentBalance = DB::table('cashes')->first()->currentBalance;
+            DB::table('cashes')->update(['currentBalance' => $previousCurrentBalance - $request->initialExpense]);
+        }
+        /////////////////////  the logic ends here  ////////////////////////
+
         return response()->json([
             'status' => 200,
             'message' => 'Shopexpenditure added successfully',
@@ -49,7 +51,7 @@ class ShopExpenditureController extends Controller
 
     public function index(Request $request)
     {
-        
+
         if ($request->sort == "-id") {
             $shopExpenditure = Shopexpenditure::orderBy('id', 'desc')->paginate(20);
         } else {
@@ -78,7 +80,8 @@ class ShopExpenditureController extends Controller
         ]);
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $shopExpenditure = Shopexpenditure::find($id);
         if ($shopExpenditure) {
             $shopExpenditure->delete();
@@ -93,6 +96,4 @@ class ShopExpenditureController extends Controller
             ]);
         }
     }
-
-  
 }
