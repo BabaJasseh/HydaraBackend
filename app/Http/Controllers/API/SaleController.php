@@ -29,7 +29,7 @@ class SaleController extends Controller
         } else {
             $sale = new Sale();
             $sale->seller = JWTAuth::user()->firstname;  // it should be the authenticated user Auth::user
-            $sale->customerName = $request->customerName;
+            $sale->customername = $request->customerName;
             $sale->totalSalePrice = $request->totalSalePrice;
             $sale->amountpaid = $request->amountPaid;
             $sale->balance = $request->totalSalePrice - $request->amountPaid;
