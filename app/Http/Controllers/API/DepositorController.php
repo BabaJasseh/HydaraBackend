@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
+use App\Models\Cash;
 use App\Models\Depositor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
 class DepositorController extends Controller
@@ -34,6 +36,19 @@ class DepositorController extends Controller
             $depositor->initialDeposit = $request->initialDeposit;
             $depositor->balance = $depositor->initialDeposit;
             $depositor->save();
+
+            $previousCashAthand = DB::table('cashes')->first();
+            if ($previousCashAthand == null) {
+                $cash = new Cash();
+                $cash->cashAthand = $request->initialDeposit;
+                $cash->currentBalance = $request->initialDeposit;
+                $cash->save();
+            } else {
+                $previousCashAthand = DB::table('cashes')->first()->cashAthand;
+                DB::table('cashes')->update(['cashAthand' => $previousCashAthand + $request->initialDeposit]);
+                $previousCurrentBalance = DB::table('cashes')->first()->currentBalance;
+                DB::table('cashes')->update(['currentBalance' => $previousCurrentBalance + $request->initialDeposit]);
+            }
 
             return response()->json([
                 'status' => 200,

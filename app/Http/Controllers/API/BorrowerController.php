@@ -7,6 +7,7 @@ use App\Models\Borrower;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use App\Models\Cash;
 
 class BorrowerController extends Controller
 {
@@ -35,6 +36,18 @@ class BorrowerController extends Controller
             $borrower->initialBorrow = $request->initialBorrow;
             $borrower->balance = $borrower->initialBorrow;
             $borrower->save();
+            $previousCashAthand = DB::table('cashes')->first();
+            if ($previousCashAthand == null) {
+                $cash = new Cash();
+                $cash->cashAthand = 0 - $request->initialBorrow;
+                $cash->currentBalance = 0 - $request->initialBorrow;
+                $cash->save();
+            } else {
+                $previousCashAthand = DB::table('cashes')->first()->cashAthand;
+                DB::table('cashes')->update(['cashAthand' => $previousCashAthand - $request->initialBorrow]);
+                $previousCurrentBalance = DB::table('cashes')->first()->currentBalance;
+                DB::table('cashes')->update(['currentBalance' => $previousCurrentBalance - $request->initialBorrow]);
+            }
             return response()->json([
                 'status' => 200,
                 'message' => 'Borrower added successfully',
