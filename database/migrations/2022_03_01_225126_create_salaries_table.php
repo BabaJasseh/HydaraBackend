@@ -15,10 +15,11 @@ class CreateSalariesTable extends Migration
     {
         Schema::create('salaries', function (Blueprint $table) {
             $table->id();
-            $table->string('staffname');
+            $table->unsignedBigInteger('staff_id')->nullable();
             $table->string('month');
             $table->integer('amount');
             $table->string('date');
+            $table->foreign('staff_id')->references('id')->on('staff');
             $table->timestamps();
         });
     }

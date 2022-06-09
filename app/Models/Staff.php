@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Staff extends Model
 {
     use HasFactory;
+
+    public function salaries()
+    {
+        return $this->hasMany(Salary::class);
+    }
 }

@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
+use Carbon\Carbon;
+use App\Models\Cash;
 use App\Models\Salary;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 
 class SalaryController extends Controller
 {
@@ -14,9 +16,8 @@ class SalaryController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'staffname' => 'required|max:191',
+            'staff_id' => 'required|max:191',
             'month' => 'required|max:191',
-            'date' => 'required|max:190',
             'amount' => 'required|max:200',
         ]);
         if ($validator->fails()) {
@@ -26,15 +27,25 @@ class SalaryController extends Controller
             ]);
         } else {
             $salary = new Salary();
-            $salary->staffname = $request->staffname;
+            $salary->staff_id = $request->staff_id;
             $salary->month = $request->month;
             $salary->amount = $request->amount;
-            $salary->date = $request->date;
+            $salary->date = Carbon::now()->toDateString();
             $salary->save();
 
             //////////////////////////////   subtract the withdraw amount to the cashes.cashathand //////////////////
-            $previousCashAthand = DB::table('cashes')->first()->cashAthand;
-            DB::table('cashes')->update(['cashAthand' => $previousCashAthand - $request->sellingprice - $request->amount]);
+            $previousCashAthand = DB::table('cashes')->first();
+            if ($previousCashAthand == null) {
+                $cash = new Cash();
+                $cash->cashAthand = 0 - $request->amount;
+                $cash->currentBalance = 0 - $request->amount;
+                $cash->save();
+            } else {
+                $previousCashAthand = DB::table('cashes')->first()->cashAthand;
+                DB::table('cashes')->update(['cashAthand' => $previousCashAthand - $request->amount]);
+                $previousCurrentBalance = DB::table('cashes')->first()->currentBalance;
+                DB::table('cashes')->update(['currentBalance' => $previousCurrentBalance - $request->amount]);
+            }
             /////////////////////
 
 
@@ -49,16 +60,17 @@ class SalaryController extends Controller
     {
         // $product = Product::with('category', 'brand', 'stock')->get();
         // return $request;
+        $limit = $request->limit;
         if ($request->sort == "-id") {
             // $product = Product::with('category', 'brand')->orderBy('id', 'desc')->paginate(20);
-            $product = Salary::orderBy('id', 'desc')->paginate(20);
+            $product = Salary::orderBy('id', 'desc')->with('staff')->paginate($limit);
         } else {
-            $product = Salary::paginate(20);
+            $product = Salary::with('staff')->paginate($limit);
         }
 
         if ($request->staffname) {
             $order = $request->sort == '-id' ? 'DESC' : 'ASC';
-            $product = Salary::where('staffname', 'LIKE', '%' . $request->staffname . '%')->orderBy('id', $order)->paginate(20);
+            $product = Salary::where('staffname', 'LIKE', '%' . $request->staffname . '%')->with('staff')->orderBy('id', $order)->paginate($limit);
         }
         $response = [
             'pagination' => [
