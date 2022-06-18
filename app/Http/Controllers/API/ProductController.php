@@ -118,6 +118,12 @@ class ProductController extends Controller
         $productQuantity =  DB::table('products')->where('id', '=', $productId)->first()->totalQuantity;
         $newQuantity = $productQuantity + $request->quantityToAppend;
         DB::table('products')->where('id', '=', $productId)->update(['totalQuantity' => $newQuantity]);
+
+        /// get the the stock quantity and price and update the total price
+        $productQuantityAfterAppending =  DB::table('products')->where('id', '=', $productId)->first()->totalQuantity;
+        $costprice =  DB::table('products')->where('id', '=', $productId)->first()->costprice;
+        DB::table('products')->where('id', '=', $productId)->update(['totalPrice' => $productQuantityAfterAppending * $costprice]);
+
         return response()->json([
             'status' => 200,
             'result' => $newQuantity,

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\Cash;
+use App\Models\Transaction;
 use App\Models\Depositor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -37,6 +38,13 @@ class DepositorController extends Controller
             $depositor->balance = $depositor->initialDeposit;
             $depositor->save();
 
+            $initialTransaction = new Transaction();
+             $initialTransaction->action = 'deposit';
+            $initialTransaction->amount = $request->initialDeposit;
+            $initialTransaction->description = $request->description;
+            $initialTransaction->depositor_id = $depositor->id;
+            $initialTransaction->save();
+            
             $previousCashAthand = DB::table('cashes')->first();
             if ($previousCashAthand == null) {
                 $cash = new Cash();

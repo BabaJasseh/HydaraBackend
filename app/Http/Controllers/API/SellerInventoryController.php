@@ -27,6 +27,12 @@ class SellerInventoryController extends Controller
         $mainStockQuantity =  DB::table('products')->where('id', '=', $productId)->first()->totalQuantity;
         DB::table('products')->where('id', '=', $productId)->update(['totalQuantity' => $mainStockQuantity -  $request->quantityToAdd]);
         $sellerInventory->save();
+
+          /// get the the stock quantity and price and update the total price
+          $productQuantityAfterAppending =  DB::table('products')->where('id', '=', $productId)->first()->totalQuantity;
+          $costprice =  DB::table('products')->where('id', '=', $productId)->first()->costprice;
+          DB::table('products')->where('id', '=', $productId)->update(['totalPrice' => $productQuantityAfterAppending * $costprice]);
+
         return response()->json([
             'status' => 200,
             'result' => "product Seller successfuly",
@@ -45,6 +51,11 @@ class SellerInventoryController extends Controller
         }
         DB::table('sellerinventories')->where('user_id', '=', $request->user_id)->update(['sellerStockQuantity' => $sellerStockQuantity + $request->quantityToAddOrRemove]);
         DB::table('products')->where('id', '=', $productId)->update(['totalQuantity' => $mainStockQuantity - $request->quantityToAddOrRemove]);
+
+          /// get the the stock quantity and price and update the total price
+          $productQuantityAfterAppending =  DB::table('products')->where('id', '=', $productId)->first()->totalQuantity;
+          $costprice =  DB::table('products')->where('id', '=', $productId)->first()->costprice;
+          DB::table('products')->where('id', '=', $productId)->update(['totalPrice' => $productQuantityAfterAppending * $costprice]);
         return response()->json([
             'status' => 200,
             'result' => "updated successfuly",
