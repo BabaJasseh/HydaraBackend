@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Shopexpenditure;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 
 
 class ShopExpenditureController extends Controller
@@ -78,6 +79,36 @@ class ShopExpenditureController extends Controller
             'status' => 200,
             'result' => $response,
         ]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            // 'name' => 'required|max:191',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 422,
+                'errors' => $validator->errors(),
+            ]);
+        } else {
+            $shopExpenditure = Shopexpenditure::find($id);
+            if ($shopExpenditure) {
+                $shopExpenditure->categoryName = $request->categoryName;
+                $shopExpenditure->description = $request->categoryName;
+                $shopExpenditure->initialExpense = $request->initialExpense;
+                $shopExpenditure->save();
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'shop expenditure updated successfully',
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 404,
+                    'messages' => "shop expenditure id not found",
+                ]);
+            }
+        }
     }
 
     public function destroy($id)

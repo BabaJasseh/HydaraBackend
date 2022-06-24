@@ -176,7 +176,7 @@ class DepositorController extends Controller
             'address' => 'required|max:191',
             'description' => 'required|max:190',
             'telephone' => 'required|max:190',
-            'initialDeposit' => 'required|max:200',
+            // 'initialDeposit' => 'required|max:200',
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -191,7 +191,8 @@ class DepositorController extends Controller
                 $depositor->address = $request->address;
                 $depositor->description = $request->description;
                 $depositor->telephone = $request->telephone;
-                $depositor->initialDeposit = $request->initialDeposit;
+                // $depositor->initialDeposit = $request->initialDeposit;
+                $depositor->balance = $request->balance;
                 $depositor->save();
                 return response()->json([
                     'status' => 200,

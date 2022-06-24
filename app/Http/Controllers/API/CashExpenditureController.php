@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Cashexpenditure;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 
 
 class CashExpenditureController extends Controller
@@ -96,6 +97,36 @@ class CashExpenditureController extends Controller
                 'status' => 404,
                 'message' => 'no cas$cashExpenditure found',
             ]);
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            // 'name' => 'required|max:191',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 422,
+                'errors' => $validator->errors(),
+            ]);
+        } else {
+            $cashExpenditure = Cashexpenditure::find($id);
+            if ($cashExpenditure) {
+                $cashExpenditure->categoryName = $request->categoryName;
+                $cashExpenditure->description = $request->categoryName;
+                $cashExpenditure->initialExpense = $request->initialExpense;
+                $cashExpenditure->save();
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'cash expenditure updated successfully',
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 404,
+                    'messages' => "category id not found",
+                ]);
+            }
         }
     }
 }
