@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\BorrowerTransaction;
 use App\Models\Borrower;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -36,6 +37,15 @@ class BorrowerController extends Controller
             $borrower->initialBorrow = $request->initialBorrow;
             $borrower->balance = $borrower->initialBorrow;
             $borrower->save();
+
+            
+            $initialBorrowerTransaction = new BorrowerTransaction();
+            $initialBorrowerTransaction->borrower_id = $borrower->id;
+            $initialBorrowerTransaction->action = 'borrow';
+            $initialBorrowerTransaction->amount = $request->initialBorrow;
+            $initialBorrowerTransaction->description = $request->description;
+            $initialBorrowerTransaction->save();
+            
             $previousCashAthand = DB::table('cashes')->first();
             if ($previousCashAthand == null) {
                 $cash = new Cash();
